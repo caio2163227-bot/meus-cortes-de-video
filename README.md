@@ -1,0 +1,79 @@
+# Recorte — cortes automáticos de vídeo por IA
+
+Projeto base tipo "Opus Clip": você envia um vídeo longo, a IA transcreve,
+escolhe os melhores momentos, corta em formato vertical (9:16) e já entrega
+com legenda queimada no vídeo.
+
+## Como funciona (pipeline)
+
+0. **Entrada do vídeo** — usuário cola um link (YouTube, TikTok, etc — qualquer
+   site suportado pelo `yt-dlp`) ou envia um arquivo direto. Se for link,
+   `lib/downloadVideo.js` baixa o vídeo no servidor antes de seguir o pipeline.
+1. **Upload** — usuário envia o vídeo original pela interface (ou ele já
+   chega baixado, se veio de um link).
+2. **Transcrição** (`lib/transcribe.js`) — usa a API Whisper da OpenAI pra
+   transformar o áudio em texto com timestamps.
+3. **Seleção de destaques** (`lib/highlights.js`) — envia a transcrição pra
+   Claude (Anthropic), que escolhe os trechos com mais potencial viral.
+4. **Corte + reenquadramento + legenda** (`lib/cutVideo.js`) — usa ffmpeg pra
+   cortar cada trecho, transformar em vertical 1080x1920 e queimar a legenda.
+
+## Passo a passo pra rodar local
+
+### 1. Instalar dependências
+```bash
+npm install
+```
+
+### 2. Criar sua chave de API
+Crie um arquivo `.env.local` na raiz do projeto com:
+```
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+```
+- Pegue a chave da OpenAI em https://platform.openai.com/api-keys
+- Pegue a chave da Anthropic em https://console.anthropic.com/settings/keys
+
+### 2.1 Sobre o download por link
+A biblioteca `yt-dlp-exec` baixa automaticamente o binário do `yt-dlp` na
+primeira execução. Em alguns hosts (ex: containers minimalistas) pode ser
+necessário instalar o Python e o `yt-dlp` manualmente — se der erro nesse
+passo específico, me chama que ajusto.
+
+### 3. Rodar em desenvolvimento
+```bash
+npm run dev
+```
+Abra http://localhost:3000
+
+## Onde hospedar de verdade (produção)
+
+**Importante:** processar vídeo é pesado (ffmpeg + transcrição). A Vercel
+sozinha tem limite de tempo de execução que pode não bastar. Recomendo:
+
+- **Railway** ou **Render** (mais simples, plano free/baixo custo, suporta
+  processos longos)
+- Uma **VPS** (Hetzner, DigitalOcean) se quiser controle total
+
+Em qualquer uma dessas, o processo é:
+1. Suba o código (via GitHub)
+2. Configure as variáveis de ambiente (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)
+3. Comando de build: `npm run build` — comando de start: `npm run start`
+
+## Próximos passos sugeridos (na ordem que eu recomendo construir)
+
+1. **Fila de processamento** — hoje o processamento é síncrono (o usuário
+   espera na tela). Pra vídeos longos, o ideal é usar uma fila (ex: com
+   Redis + BullMQ) e notificar quando terminar.
+2. **Armazenamento em nuvem** — hoje os clipes ficam salvos localmente em
+   `/tmp`. Pra produção, subir pro Cloudflare R2 ou AWS S3 e servir por URL.
+3. **Login e limite de uso** — Supabase Auth é o caminho mais rápido pra
+   adicionar contas de usuário e cobrar por plano.
+4. **Reenquadramento inteligente** — hoje o corte vertical centraliza o
+   frame. Dá pra melhorar com detecção de rosto (ex: usando um modelo de
+   detecção facial) pra seguir quem está falando.
+5. **Edição manual dos cortes** — deixar o usuário ajustar o início/fim do
+   corte antes de baixar, com um timeline arrastável.
+
+Me chama quando quiser evoluir qualquer um desses pontos — posso construir
+peça por peça com você.
