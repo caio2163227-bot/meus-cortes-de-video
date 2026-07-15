@@ -25,7 +25,7 @@ export default function DeleteButton({ jobId }) {
     <button
       onClick={handleDelete}
       disabled={deleting}
-      className="font-mono text-[9px] text-paper/30 hover:text-record transition-colors disabled:opacity-40 whitespace-nowrap"
+      className="font-mono text-[10px] text-record border border-record/50 rounded px-2 py-1 hover:bg-record/10 transition-colors disabled:opacity-40 whitespace-nowrap"
     >
       {deleting ? 'apagando…' : '✕ apagar'}
     </button>
