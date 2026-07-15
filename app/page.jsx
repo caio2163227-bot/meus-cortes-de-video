@@ -23,6 +23,7 @@ export default function Home() {
   const [clips, setClips] = useState([]);
   const [error, setError] = useState(null);
   const [downloadingKey, setDownloadingKey] = useState(null);
+  const [downloadedKey, setDownloadedKey] = useState(null);
   const [downloadError, setDownloadError] = useState(null);
   const inputRef = useRef(null);
 
@@ -77,6 +78,9 @@ export default function Home() {
       document.body.appendChild(a);
       a.click();
       a.remove();
+
+      setDownloadedKey(key);
+      setTimeout(() => setDownloadedKey((k) => (k === key ? null : k)), 2500);
     } catch (err) {
       setDownloadError(err.message);
     } finally {
@@ -221,20 +225,36 @@ export default function Home() {
                   {/* Escolha de duração pra baixar */}
                   <div className="mt-4 pt-4 border-t border-wire">
                     <p className="font-mono text-[10px] text-paper/40 mb-2">
-                      BAIXAR NESSA DURAÇÃO
+                      TOQUE PRA BAIXAR NESSA DURAÇÃO
                     </p>
                     <div className="flex gap-2">
                       {DURATION_OPTIONS.map((opt) => {
                         const key = `${i}-${opt.seconds}`;
                         const isLoading = downloadingKey === key;
+                        const justDownloaded = downloadedKey === key;
                         return (
                           <button
                             key={opt.seconds}
                             onClick={() => handleDownload(clip, i, opt.seconds)}
                             disabled={downloadingKey !== null}
-                            className="flex-1 border border-wire hover:border-signal hover:text-signal transition-colors rounded-md py-2 text-xs font-mono disabled:opacity-30 disabled:cursor-not-allowed"
+                            className={`flex-1 border rounded-md py-2 text-xs font-mono transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-1.5 ${
+                              justDownloaded
+                                ? 'border-signal bg-signal/10 text-signal'
+                                : 'border-wire hover:border-signal hover:text-signal disabled:opacity-30'
+                            }`}
                           >
-                            {isLoading ? '···' : opt.label}
+                            {isLoading ? (
+                              '···'
+                            ) : justDownloaded ? (
+                              <>✓ Baixado</>
+                            ) : (
+                              <>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                  <path d="M12 3v13m0 0l-5-5m5 5l5-5M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                {opt.label}
+                              </>
+                            )}
                           </button>
                         );
                       })}
