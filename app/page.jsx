@@ -214,10 +214,7 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            
-              href="/login"
-              className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors border-l border-wire pl-4"
-            >
+            <a href="/login" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors border-l border-wire pl-4">
               ENTRAR
             </a>
           )}
@@ -510,11 +507,7 @@ export default function Home() {
                   </div>
 
                   {/* Baixar — a duração já veio certa desde a geração */}
-                  
-                    href={clip.file}
-                    download={`corte-${i + 1}.mp4`}
-                    className="flex items-center justify-center gap-1.5 border border-wire hover:border-signal hover:text-signal rounded-md py-2 text-xs font-mono transition-colors"
-                  >
+                  <a href={clip.file} download={`corte-${i + 1}.mp4`} className="flex items-center justify-center gap-1.5 border border-wire hover:border-signal hover:text-signal rounded-md py-2 text-xs font-mono transition-colors">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M12 3v13m0 0l-5-5m5 5l5-5M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
