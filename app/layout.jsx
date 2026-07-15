@@ -15,7 +15,18 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="bg-ink text-paper font-body">{children}</body>
+      <body className="bg-ink text-paper font-body">
+        {children}
+
+        {/* Letreiro — como o "lower third" que identifica alguém na TV */}
+        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 select-none pointer-events-none">
+          <div className="w-1 h-9 bg-signal rounded-full" />
+          <div className="bg-ink/90 border border-wire rounded px-3 py-1.5 backdrop-blur-sm">
+            <p className="font-display italic text-sm leading-tight">Caio Brito</p>
+            <p className="font-mono text-[9px] text-timecode tracking-wide">FUNDADOR · CBZ COMPANY</p>
+          </div>
+        </div>
+      </body>
     </html>
   );
 }
