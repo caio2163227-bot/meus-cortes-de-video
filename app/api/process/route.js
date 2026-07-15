@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { transcribeVideo } from '@/lib/transcribe';
 import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
@@ -14,6 +16,11 @@ export const maxDuration = 300;
 
 export async function POST(req) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Faça login para gerar cortes.' }, { status: 401 });
+    }
+
     // Libera espaço apagando vídeos originais de jobs antigos, antes
     // de processar um novo (mantém os cortes finais no histórico).
     cleanupOldOriginals();
@@ -73,6 +80,7 @@ export async function POST(req) {
     // Guarda esse vídeo no histórico permanente
     addJobToIndex({
       jobId,
+      userId: session.user.id,
       createdAt: new Date().toISOString(),
       sourceLabel,
       clips,

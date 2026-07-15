@@ -1,4 +1,5 @@
 import './globals.css';
+import Providers from './providers';
 
 export const metadata = {
   title: 'Recorte — cortes automáticos por IA',
@@ -16,7 +17,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="bg-ink text-paper font-body">
-        {children}
+        <Providers>{children}</Providers>
 
         {/* Letreiro — como o "lower third" que identifica alguém na TV */}
         <a

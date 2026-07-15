@@ -1,3 +1,5 @@
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { getAllJobs } from '@/lib/jobIndex';
 import DeleteButton from './DeleteButton';
 
@@ -20,8 +22,9 @@ function formatTime(t) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-export default function Historico() {
-  const jobs = getAllJobs();
+export default async function Historico() {
+  const session = await getServerSession(authOptions);
+  const jobs = getAllJobs(session?.user?.id);
 
   return (
     <main className="min-h-screen">

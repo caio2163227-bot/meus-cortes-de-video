@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 function formatTime(t) {
   const m = Math.floor(t / 60);
@@ -124,6 +125,7 @@ const FORMATS = [
 ];
 
 export default function Home() {
+  const { data: session } = useSession();
   const [mode, setMode] = useState('link'); // 'link' | 'file'
   const [file, setFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState('');
@@ -194,9 +196,25 @@ export default function Home() {
           <span className="font-mono text-xs tracking-widest text-paper/70">REC</span>
         </div>
         <span className="font-display italic text-2xl">recorte</span>
-        <a href="/historico" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
-          HISTÓRICO →
-        </a>
+        <div className="flex items-center gap-4">
+          <a href="/historico" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
+            HISTÓRICO →
+          </a>
+          {session?.user && (
+            <div className="flex items-center gap-2 border-l border-wire pl-4">
+              <span className="font-mono text-xs text-paper/40 hidden sm:inline">
+                {session.user.name}
+              </span>
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: '/login' })}
+                className="font-mono text-xs tracking-widest text-paper/40 hover:text-record transition-colors"
+              >
+                SAIR
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Hero — a linha do tempo é a tese do produto */}
