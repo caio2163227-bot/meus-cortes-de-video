@@ -6,6 +6,7 @@ import { transcribeVideo } from '@/lib/transcribe';
 import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
 import { extractAudio } from '@/lib/extractAudio';
+import { downloadFromUrl, isVideoUrl } from '@/lib/downloadVideo';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -14,20 +15,28 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
     const file = formData.get('video');
-    if (!file) {
-      return NextResponse.json({ error: 'Nenhum vídeo enviado.' }, { status: 400 });
+    const videoUrl = formData.get('videoUrl');
+
+    if (!file && !videoUrl) {
+      return NextResponse.json({ error: 'Envie um vídeo ou cole um link.' }, { status: 400 });
     }
 
     const jobId = uuid();
     const workDir = path.join(process.cwd(), 'tmp', jobId);
     await mkdir(workDir, { recursive: true });
 
-    const inputPath = path.join(workDir, 'original.mp4');
-    const bytes = Buffer.from(await file.arrayBuffer());
-    await writeFile(inputPath, bytes);
+    let inputPath;
+    if (videoUrl) {
+      if (!isVideoUrl(videoUrl)) {
+        return NextResponse.json({ error: 'Link inválido.' }, { status: 400 });
+      }
+      inputPath = await downloadFromUrl(videoUrl, workDir);
+    } else {
+      inputPath = path.join(workDir, 'original.mp4');
+      const bytes = Buffer.from(await file.arrayBuffer());
+      await writeFile(inputPath, bytes);
+    }
 
-    // Extrai só o áudio (bem menor que o vídeo) antes de transcrever,
-    // pra não estourar o limite de tamanho da API gratuita.
     const audioPath = path.join(workDir, 'audio.mp3');
     await extractAudio(inputPath, audioPath);
 
@@ -47,7 +56,7 @@ export async function POST(req) {
         vertical: true,
         burnCaptions: true,
       });
-     clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
+      clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
     }
 
     return NextResponse.json({ jobId, clips });
