@@ -6,8 +6,9 @@ export default withAuth({
   },
 });
 
+// Só protege o histórico (que mostra dados pessoais). A página inicial
+// fica pública — quem quiser só ver a vitrine não precisa logar. Gerar
+// corte já é protegido separadamente dentro da própria rota da API.
 export const config = {
-  matcher: [
-    '/((?!login|cadastro|api/auth|api/register|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/historico/:path*'],
 };
