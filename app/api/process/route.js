@@ -41,6 +41,12 @@ export async function POST(req) {
     await extractAudio(inputPath, audioPath);
 
     const { segments } = await transcribeVideo(audioPath);
+
+    // Salva a transcrição em disco — assim, quando a pessoa escolher
+    // uma duração diferente (30s, 1min, 1:30) depois, dá pra recortar
+    // de novo com a legenda certa, sem precisar transcrever tudo de novo.
+    await writeFile(path.join(workDir, 'segments.json'), JSON.stringify(segments));
+
     const highlights = await findHighlights(segments);
 
     const clips = [];
