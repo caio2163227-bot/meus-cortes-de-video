@@ -7,6 +7,7 @@ import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
 import { extractAudio } from '@/lib/extractAudio';
 import { downloadFromUrl, isVideoUrl } from '@/lib/downloadVideo';
+import { DATA_DIR, addJobToIndex } from '@/lib/jobIndex';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -22,29 +23,28 @@ export async function POST(req) {
     }
 
     const jobId = uuid();
-    const workDir = path.join(process.cwd(), 'tmp', jobId);
+    const workDir = path.join(DATA_DIR, jobId);
     await mkdir(workDir, { recursive: true });
 
     let inputPath;
+    let sourceLabel;
     if (videoUrl) {
       if (!isVideoUrl(videoUrl)) {
         return NextResponse.json({ error: 'Link inválido.' }, { status: 400 });
       }
       inputPath = await downloadFromUrl(videoUrl, workDir);
+      sourceLabel = videoUrl;
     } else {
       inputPath = path.join(workDir, 'original.mp4');
       const bytes = Buffer.from(await file.arrayBuffer());
       await writeFile(inputPath, bytes);
+      sourceLabel = file.name || 'arquivo enviado';
     }
 
     const audioPath = path.join(workDir, 'audio.mp3');
     await extractAudio(inputPath, audioPath);
 
     const { segments } = await transcribeVideo(audioPath);
-
-    // Salva a transcrição em disco — assim, quando a pessoa escolher
-    // uma duração diferente (30s, 1min, 1:30) depois, dá pra recortar
-    // de novo com a legenda certa, sem precisar transcrever tudo de novo.
     await writeFile(path.join(workDir, 'segments.json'), JSON.stringify(segments));
 
     const highlights = await findHighlights(segments);
@@ -64,6 +64,14 @@ export async function POST(req) {
       });
       clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
     }
+
+    // Guarda esse vídeo no histórico permanente
+    addJobToIndex({
+      jobId,
+      createdAt: new Date().toISOString(),
+      sourceLabel,
+      clips,
+    });
 
     return NextResponse.json({ jobId, clips });
   } catch (err) {
