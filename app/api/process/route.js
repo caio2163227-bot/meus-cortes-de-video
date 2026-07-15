@@ -47,7 +47,7 @@ export async function POST(req) {
         vertical: true,
         burnCaptions: true,
       });
-      clips.push({ ...h, file: `/tmp/${jobId}/clip-${i + 1}.mp4` });
+     clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
     }
 
     return NextResponse.json({ jobId, clips });
