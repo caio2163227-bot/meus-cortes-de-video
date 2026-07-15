@@ -9,20 +9,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <head>
-     {/* 1. Carrega a biblioteca do AdSense */}
-<Script
-  async
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4861808033042845"
-  crossOrigin="anonymous"
-  strategy="afterInteractive"
-/>
-
-{/* 2. Executa a inicialização de forma segura em JSX */}
-<Script id="google-adsense-init" strategy="afterInteractive">
-  {`
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  `}
-</Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"
