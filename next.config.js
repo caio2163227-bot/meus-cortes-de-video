@@ -4,6 +4,7 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '500mb',
     },
+    serverComponentsExternalPackages: ['fluent-ffmpeg', 'ffmpeg-static', 'ffprobe-static'],
   },
 };
 
