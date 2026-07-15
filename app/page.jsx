@@ -202,34 +202,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Formatos — como os botões de seleção de fonte num switcher de vídeo */}
-      <section className="px-8 py-16 border-t border-wire">
-        <div className="max-w-5xl mx-auto">
-          <p className="font-mono text-xs tracking-widest text-paper/40 text-center mb-10">
-            FUNCIONA COM QUALQUER GRAVAÇÃO LONGA
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {FORMATS.map((f, i) => (
-              <div
-                key={f.label}
-                className="group border border-wire rounded-md p-5 hover:border-signal/50 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-5">
-                  <span className="font-mono text-[10px] text-timecode">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="text-paper/40 group-hover:text-signal transition-colors">
-                    {f.icon}
-                  </div>
-                </div>
-                <p className="font-display italic text-lg mb-1.5">{f.label}</p>
-                <p className="text-paper/40 text-xs leading-relaxed">{f.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Upload */}
       <section className="px-8 pb-24 max-w-xl mx-auto">
         {/* Seletor de modo: colar link ou enviar arquivo */}
@@ -318,6 +290,34 @@ export default function Home() {
         {error && (
           <p className="text-center text-sm text-signal mt-4">{error}</p>
         )}
+      </section>
+
+      {/* Formatos — como os botões de seleção de fonte num switcher de vídeo */}
+      <section className="px-8 py-16 border-t border-wire">
+        <div className="max-w-5xl mx-auto">
+          <p className="font-mono text-xs tracking-widest text-paper/40 text-center mb-10">
+            FUNCIONA COM QUALQUER GRAVAÇÃO LONGA
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {FORMATS.map((f, i) => (
+              <div
+                key={f.label}
+                className="group border border-wire rounded-md p-5 hover:border-signal/50 transition-colors"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <span className="font-mono text-[10px] text-timecode">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="text-paper/40 group-hover:text-signal transition-colors">
+                    {f.icon}
+                  </div>
+                </div>
+                <p className="font-display italic text-lg mb-1.5">{f.label}</p>
+                <p className="text-paper/40 text-xs leading-relaxed">{f.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Resultados */}
