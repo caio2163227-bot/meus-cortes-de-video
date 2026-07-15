@@ -6,6 +6,8 @@ export const metadata = {
   description: 'Envie um vídeo longo e receba os melhores cortes verticais, com legenda, prontos pra postar.',
 };
 
+const LED_TEXT = 'CBZ COMPANY •  '.repeat(30);
+
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
@@ -16,11 +18,11 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body className="bg-ink text-paper font-body">
+      <body className="bg-ink text-paper font-body p-4">
         <Providers>{children}</Providers>
 
-        {/* Letreiro — como o "lower third" que identifica alguém na TV */}
-        <a
+        {/* Letreiro — como o "lower third" que identifica alguém na TV, agora linkando pro Instagram */}
+        
           href="https://instagram.com/eo_cbz"
           target="_blank"
           rel="noopener noreferrer"
@@ -49,6 +51,53 @@ export default function RootLayout({ children }) {
             </svg>
           </div>
         </a>
+
+        {/* Moldura de LED — texto correndo ao redor da tela, tipo luz de marquise */}
+        <div className="fixed inset-0 z-30 pointer-events-none">
+          {/* Cima — corre pra direita */}
+          <div className="absolute top-0 left-0 right-0 h-4 overflow-hidden bg-ink border-b border-signal/40">
+            <div
+              className="led-marquee flex whitespace-nowrap"
+              style={{ animation: 'marquee-x 25s linear infinite reverse' }}
+            >
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pr-4">{LED_TEXT}</span>
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pr-4">{LED_TEXT}</span>
+            </div>
+          </div>
+
+          {/* Baixo — corre pra esquerda */}
+          <div className="absolute bottom-0 left-0 right-0 h-4 overflow-hidden bg-ink border-t border-signal/40">
+            <div
+              className="led-marquee flex whitespace-nowrap"
+              style={{ animation: 'marquee-x 25s linear infinite' }}
+            >
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pr-4">{LED_TEXT}</span>
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pr-4">{LED_TEXT}</span>
+            </div>
+          </div>
+
+          {/* Esquerda — corre pra cima */}
+          <div className="absolute top-0 bottom-0 left-0 w-4 overflow-hidden bg-ink border-r border-signal/40">
+            <div
+              className="led-marquee flex flex-col whitespace-nowrap"
+              style={{ writingMode: 'vertical-rl', animation: 'marquee-y 25s linear infinite reverse' }}
+            >
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pb-4">{LED_TEXT}</span>
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pb-4">{LED_TEXT}</span>
+            </div>
+          </div>
+
+          {/* Direita — corre pra baixo */}
+          <div className="absolute top-0 bottom-0 right-0 w-4 overflow-hidden bg-ink border-l border-signal/40">
+            <div
+              className="led-marquee flex flex-col whitespace-nowrap"
+              style={{ writingMode: 'vertical-rl', animation: 'marquee-y 25s linear infinite' }}
+            >
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pb-4">{LED_TEXT}</span>
+              <span className="font-mono text-[9px] text-signal tracking-[0.3em] pb-4">{LED_TEXT}</span>
+            </div>
+          </div>
+        </div>
       </body>
     </html>
   );
