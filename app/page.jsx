@@ -400,7 +400,7 @@ export default function Home() {
                   </div>
 
                   {/* Baixar — a duração já veio certa desde a geração */}
-                  
+                  <a
                     href={clip.file}
                     download={`corte-${i + 1}.mp4`}
                     className="flex items-center justify-center gap-1.5 border border-wire hover:border-signal hover:text-signal rounded-md py-2 text-xs font-mono transition-colors"
