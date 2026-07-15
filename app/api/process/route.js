@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { transcribeVideo } from '@/lib/transcribe';
 import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
@@ -15,12 +14,8 @@ export const runtime = 'nodejs';
 export const maxDuration = 300;
 
 export async function POST(req) {
+  let workDir;
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Faça login para gerar cortes.' }, { status: 401 });
-    }
-
     // Libera espaço apagando vídeos originais de jobs antigos, antes
     // de processar um novo (mantém os cortes finais no histórico).
     cleanupOldOriginals();
@@ -35,7 +30,7 @@ export async function POST(req) {
     }
 
     const jobId = uuid();
-    const workDir = path.join(DATA_DIR, jobId);
+    workDir = path.join(DATA_DIR, jobId);
     await mkdir(workDir, { recursive: true });
 
     let inputPath;
@@ -80,7 +75,6 @@ export async function POST(req) {
     // Guarda esse vídeo no histórico permanente
     addJobToIndex({
       jobId,
-      userId: session.user.id,
       createdAt: new Date().toISOString(),
       sourceLabel,
       clips,
@@ -89,6 +83,18 @@ export async function POST(req) {
     return NextResponse.json({ jobId, clips });
   } catch (err) {
     console.error(err);
+
+    // Se algo deu errado no meio do caminho, apaga a pasta desse job —
+    // senão fica lixo órfão ocupando espaço, já que ele nunca chegou a
+    // entrar no histórico (e por isso a limpeza automática não o vê).
+    if (workDir && fs.existsSync(workDir)) {
+      try {
+        fs.rmSync(workDir, { recursive: true, force: true });
+      } catch (cleanupErr) {
+        console.error('Falha ao limpar pasta após erro:', cleanupErr);
+      }
+    }
+
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
