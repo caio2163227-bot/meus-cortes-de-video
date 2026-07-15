@@ -47,6 +47,32 @@ const FEATURE_BADGES = [
   },
 ];
 
+// Exemplos ilustrativos — vídeos de estoque só para mostrar o formato do corte final,
+// não são resultados reais gerados pela IA
+const SHOWCASE_CLIPS = [
+  {
+    title: 'A virada da conversa',
+    tag: 'PODCAST',
+    reason: 'Momento em que o convidado muda de opinião ao vivo.',
+    score: 94,
+    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  },
+  {
+    title: 'A pergunta que travou todo mundo',
+    tag: 'ENTREVISTA',
+    reason: 'Silêncio de 3 segundos antes da resposta mais comentada.',
+    score: 88,
+    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+  },
+  {
+    title: 'O exemplo que ficou didático',
+    tag: 'AULA',
+    reason: 'Explicação isolada, pronta pra revisão rápida.',
+    score: 91,
+    src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  },
+];
+
 const FORMATS = [
   {
     label: 'PODCAST',
@@ -360,6 +386,65 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Vitrine — exemplos ilustrativos com "tally light" acesa, deixando explícito que é um corte destacado */}
+      <section className="px-8 py-16 border-t border-wire">
+        <div className="max-w-5xl mx-auto">
+          <p className="font-mono text-xs tracking-widest text-paper/40 text-center mb-2">
+            EXEMPLOS DE CORTE
+          </p>
+          <h2 className="font-display italic text-3xl text-center mb-10">
+            É assim que fica um trecho <span className="text-signal">destacado</span>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {SHOWCASE_CLIPS.map((clip) => (
+              <div
+                key={clip.title}
+                className="rounded-md border border-record/40 overflow-hidden"
+                style={{ boxShadow: '0 0 40px -12px rgba(255, 59, 46, 0.45)' }}
+              >
+                <div className="relative">
+                  <video
+                    src={clip.src}
+                    className="w-full aspect-[9/16] bg-black object-cover"
+                    muted
+                    loop
+                    autoPlay
+                    playsInline
+                  />
+                  {/* LED — luz de tally acesa, como a que indica "no ar" numa câmera de estúdio */}
+                  <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-1 bg-ink/80 rounded-full pointer-events-none">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-record opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-record" />
+                    </span>
+                    <span className="font-mono text-[9px] text-record tracking-wide">DESTAQUE</span>
+                  </div>
+                  <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-ink/80 rounded font-mono text-[9px] text-timecode tracking-wide pointer-events-none">
+                    {clip.tag}
+                  </div>
+                </div>
+                <div className="p-4">
+                  <p className="font-display text-xl italic leading-snug mb-2">{clip.title}</p>
+                  <p className="text-paper/50 text-sm mb-4">{clip.reason}</p>
+                  <div>
+                    <div className="flex justify-between font-mono text-[9px] text-paper/40 mb-1 tracking-wide">
+                      <span>POTENCIAL VIRAL</span>
+                      <span className="text-timecode">{clip.score}/100</span>
+                    </div>
+                    <div className="h-1 bg-wire rounded-full overflow-hidden">
+                      <div className="h-full bg-timecode rounded-full" style={{ width: `${clip.score}%` }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-center font-mono text-[9px] text-paper/30 tracking-wide mt-8">
+            EXEMPLOS ILUSTRATIVOS · SEU RESULTADO É GERADO A PARTIR DO SEU PRÓPRIO VÍDEO
+          </p>
         </div>
       </section>
 
