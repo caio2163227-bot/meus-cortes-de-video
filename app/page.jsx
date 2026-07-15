@@ -100,7 +100,9 @@ export default function Home() {
           <span className="font-mono text-xs tracking-widest text-paper/70">REC</span>
         </div>
         <span className="font-display italic text-2xl">recorte</span>
-        <span className="font-mono text-xs tracking-widest text-paper/40">v0.2</span>
+        <a href="/historico" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
+          HISTÓRICO →
+        </a>
       </header>
 
       {/* Hero — a linha do tempo é a tese do produto */}
