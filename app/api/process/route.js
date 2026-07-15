@@ -21,6 +21,7 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get('video');
     const videoUrl = formData.get('videoUrl');
+    const duration = parseInt(formData.get('duration'), 10) || 60;
 
     if (!file && !videoUrl) {
       return NextResponse.json({ error: 'Envie um vídeo ou cole um link.' }, { status: 400 });
@@ -51,7 +52,7 @@ export async function POST(req) {
     const { segments } = await transcribeVideo(audioPath);
     await writeFile(path.join(workDir, 'segments.json'), JSON.stringify(segments));
 
-    const highlights = await findHighlights(segments);
+    const highlights = await findHighlights(segments, { targetDuration: duration });
 
     const clips = [];
     for (let i = 0; i < highlights.length; i++) {
