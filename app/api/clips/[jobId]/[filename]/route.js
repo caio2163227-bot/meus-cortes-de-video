@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import fs from 'fs';
+import { DATA_DIR } from '@/lib/jobIndex';
 
 // Essa rota serve os vídeos cortados que ficam salvos no servidor,
 // pra que o navegador consiga carregar e tocar eles na tela.
@@ -12,7 +13,7 @@ export async function GET(req, { params }) {
     return NextResponse.json({ error: 'Caminho inválido.' }, { status: 400 });
   }
 
-  const filePath = path.join(process.cwd(), 'tmp', jobId, filename);
+  const filePath = path.join(DATA_DIR, jobId, filename);
 
   if (!fs.existsSync(filePath)) {
     return NextResponse.json({ error: 'Arquivo não encontrado.' }, { status: 404 });
