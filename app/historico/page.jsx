@@ -1,4 +1,5 @@
 import { getAllJobs } from '@/lib/jobIndex';
+import DeleteButton from './DeleteButton';
 
 // Impede o Next.js de "engessar" essa página numa versão fixa do build —
 // assim ela sempre confere o histórico atualizado a cada visita.
@@ -43,9 +44,12 @@ export default function Historico() {
               <div key={job.jobId}>
                 <div className="flex items-baseline justify-between mb-4 border-b border-wire pb-2 gap-4">
                   <p className="font-mono text-xs text-timecode truncate">{job.sourceLabel}</p>
-                  <p className="font-mono text-[10px] text-paper/30 whitespace-nowrap">
-                    {formatDate(job.createdAt)}
-                  </p>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <p className="font-mono text-[10px] text-paper/30 whitespace-nowrap">
+                      {formatDate(job.createdAt)}
+                    </p>
+                    <DeleteButton jobId={job.jobId} />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {job.clips.map((clip, i) => (
