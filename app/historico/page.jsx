@@ -1,5 +1,9 @@
 import { getAllJobs } from '@/lib/jobIndex';
 
+// Impede o Next.js de "engessar" essa página numa versão fixa do build —
+// assim ela sempre confere o histórico atualizado a cada visita.
+export const dynamic = 'force-dynamic';
+
 function formatDate(iso) {
   const d = new Date(iso);
   return (
