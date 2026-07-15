@@ -7,13 +7,17 @@ import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
 import { extractAudio } from '@/lib/extractAudio';
 import { downloadFromUrl, isVideoUrl } from '@/lib/downloadVideo';
-import { DATA_DIR, addJobToIndex } from '@/lib/jobIndex';
+import { DATA_DIR, addJobToIndex, cleanupOldOriginals } from '@/lib/jobIndex';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
 
 export async function POST(req) {
   try {
+    // Libera espaço apagando vídeos originais de jobs antigos, antes
+    // de processar um novo (mantém os cortes finais no histórico).
+    cleanupOldOriginals();
+
     const formData = await req.formData();
     const file = formData.get('video');
     const videoUrl = formData.get('videoUrl');
