@@ -14,6 +14,56 @@ const DURATION_OPTIONS = [
   { label: '1:30', seconds: 90 },
 ];
 
+const FORMATS = [
+  {
+    label: 'PODCAST',
+    description: 'Puxa as histórias e opiniões mais fortes da conversa.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+        <line x1="12" x2="12" y1="19" y2="22" />
+      </svg>
+    ),
+  },
+  {
+    label: 'ENTREVISTA',
+    description: 'Isola as respostas que prendem mais atenção.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+  },
+  {
+    label: 'AULA',
+    description: 'Corta os pontos que valem revisão rápida.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 3h20" />
+        <path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3" />
+        <path d="m7 21 5-5 5 5" />
+      </svg>
+    ),
+  },
+  {
+    label: 'LIVE',
+    description: 'Encontra os picos de reação do público.',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" />
+        <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" />
+        <circle cx="12" cy="12" r="2" />
+        <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" />
+        <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" />
+      </svg>
+    ),
+  },
+];
+
 export default function Home() {
   const [mode, setMode] = useState('link'); // 'link' | 'file'
   const [file, setFile] = useState(null);
@@ -149,6 +199,34 @@ export default function Home() {
           </div>
           <span className="absolute left-0 top-full mt-2 font-mono text-[10px] text-timecode/60">00:00:00</span>
           <span className="absolute right-0 top-full mt-2 font-mono text-[10px] text-timecode/60">03:00:00</span>
+        </div>
+      </section>
+
+      {/* Formatos — como os botões de seleção de fonte num switcher de vídeo */}
+      <section className="px-8 py-16 border-t border-wire">
+        <div className="max-w-5xl mx-auto">
+          <p className="font-mono text-xs tracking-widest text-paper/40 text-center mb-10">
+            FUNCIONA COM QUALQUER GRAVAÇÃO LONGA
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {FORMATS.map((f, i) => (
+              <div
+                key={f.label}
+                className="group border border-wire rounded-md p-5 hover:border-signal/50 transition-colors"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <span className="font-mono text-[10px] text-timecode">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="text-paper/40 group-hover:text-signal transition-colors">
+                    {f.icon}
+                  </div>
+                </div>
+                <p className="font-display italic text-lg mb-1.5">{f.label}</p>
+                <p className="text-paper/40 text-xs leading-relaxed">{f.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
