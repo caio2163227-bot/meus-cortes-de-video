@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 ::selection {
-  background: #FF4D2E;
+  background: #FF3B2E;
   color: #0B0E11;
+}
+
+/* Leve profundidade no fundo — como o brilho residual de um monitor de vídeo */
+body {
+  background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 59, 46, 0.05), transparent);
+  background-attachment: fixed;
 }
