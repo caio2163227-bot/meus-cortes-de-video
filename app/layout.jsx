@@ -22,12 +22,7 @@ export default function RootLayout({ children }) {
         <Providers>{children}</Providers>
 
         {/* Letreiro — como o "lower third" que identifica alguém na TV, agora linkando pro Instagram */}
-        
-          href="https://instagram.com/eo_cbz"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 left-6 z-50 flex items-center gap-2 select-none group"
-        >
+        <a href="https://instagram.com/eo_cbz" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 left-6 z-50 flex items-center gap-2 select-none group">
           <div className="w-1 h-9 bg-signal rounded-full" />
           <div className="bg-ink/90 border border-wire group-hover:border-signal/60 rounded px-3 py-1.5 backdrop-blur-sm flex items-center gap-2 transition-colors">
             <div>
