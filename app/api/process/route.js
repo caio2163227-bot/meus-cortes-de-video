@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { transcribeVideo } from '@/lib/transcribe';
 import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
+import { extractAudio } from '@/lib/extractAudio';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -25,7 +26,12 @@ export async function POST(req) {
     const bytes = Buffer.from(await file.arrayBuffer());
     await writeFile(inputPath, bytes);
 
-    const { segments } = await transcribeVideo(inputPath);
+    // Extrai só o áudio (bem menor que o vídeo) antes de transcrever,
+    // pra não estourar o limite de tamanho da API gratuita.
+    const audioPath = path.join(workDir, 'audio.mp3');
+    await extractAudio(inputPath, audioPath);
+
+    const { segments } = await transcribeVideo(audioPath);
     const highlights = await findHighlights(segments);
 
     const clips = [];
