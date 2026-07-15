@@ -8,13 +8,22 @@ function formatTime(t) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+const DURATION_OPTIONS = [
+  { label: '0:30', seconds: 30 },
+  { label: '1:00', seconds: 60 },
+  { label: '1:30', seconds: 90 },
+];
+
 export default function Home() {
   const [mode, setMode] = useState('link'); // 'link' | 'file'
   const [file, setFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [status, setStatus] = useState('idle'); // idle | uploading | processing | done | error
+  const [jobId, setJobId] = useState(null);
   const [clips, setClips] = useState([]);
   const [error, setError] = useState(null);
+  const [downloadingKey, setDownloadingKey] = useState(null);
+  const [downloadError, setDownloadError] = useState(null);
   const inputRef = useRef(null);
 
   async function handleSubmit(e) {
@@ -38,11 +47,40 @@ export default function Home() {
 
       if (!res.ok) throw new Error(data.error || 'Erro ao processar vídeo.');
 
+      setJobId(data.jobId);
       setClips(data.clips);
       setStatus('done');
     } catch (err) {
       setError(err.message);
       setStatus('error');
+    }
+  }
+
+  async function handleDownload(clip, index, seconds) {
+    const key = `${index}-${seconds}`;
+    setDownloadingKey(key);
+    setDownloadError(null);
+
+    try {
+      const res = await fetch('/api/reclip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId, start: clip.start, duration: seconds }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || 'Erro ao gerar o corte.');
+
+      const a = document.createElement('a');
+      a.href = data.file;
+      a.download = `corte-${index + 1}-${seconds}s.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      setDownloadError(err.message);
+    } finally {
+      setDownloadingKey(null);
     }
   }
 
@@ -179,10 +217,37 @@ export default function Home() {
                   </div>
                   <p className="font-display text-xl italic leading-snug">{clip.title}</p>
                   <p className="text-paper/50 text-sm mt-2">{clip.reason}</p>
+
+                  {/* Escolha de duração pra baixar */}
+                  <div className="mt-4 pt-4 border-t border-wire">
+                    <p className="font-mono text-[10px] text-paper/40 mb-2">
+                      BAIXAR NESSA DURAÇÃO
+                    </p>
+                    <div className="flex gap-2">
+                      {DURATION_OPTIONS.map((opt) => {
+                        const key = `${i}-${opt.seconds}`;
+                        const isLoading = downloadingKey === key;
+                        return (
+                          <button
+                            key={opt.seconds}
+                            onClick={() => handleDownload(clip, i, opt.seconds)}
+                            disabled={downloadingKey !== null}
+                            className="flex-1 border border-wire hover:border-signal hover:text-signal transition-colors rounded-md py-2 text-xs font-mono disabled:opacity-30 disabled:cursor-not-allowed"
+                          >
+                            {isLoading ? '···' : opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+
+          {downloadError && (
+            <p className="text-center text-sm text-signal mt-6">{downloadError}</p>
+          )}
         </section>
       )}
     </main>
