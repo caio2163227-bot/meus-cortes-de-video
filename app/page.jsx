@@ -200,7 +200,7 @@ export default function Home() {
           <a href="/historico" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
             HISTÓRICO →
           </a>
-          {session?.user && (
+          {session?.user ? (
             <div className="flex items-center gap-2 border-l border-wire pl-4">
               <span className="font-mono text-xs text-paper/40 hidden sm:inline">
                 {session.user.name}
@@ -213,6 +213,13 @@ export default function Home() {
                 SAIR
               </button>
             </div>
+          ) : (
+            
+              href="/login"
+              className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors border-l border-wire pl-4"
+            >
+              ENTRAR
+            </a>
           )}
         </div>
       </header>
@@ -503,7 +510,7 @@ export default function Home() {
                   </div>
 
                   {/* Baixar — a duração já veio certa desde a geração */}
-                  <a
+                  
                     href={clip.file}
                     download={`corte-${i + 1}.mp4`}
                     className="flex items-center justify-center gap-1.5 border border-wire hover:border-signal hover:text-signal rounded-md py-2 text-xs font-mono transition-colors"
