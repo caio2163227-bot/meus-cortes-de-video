@@ -3,12 +3,11 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import fs from 'fs';
 import { cutClip } from '@/lib/cutVideo';
+import { DATA_DIR } from '@/lib/jobIndex';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
 
-// Recorta de novo um trecho já identificado pela IA, mas com a duração
-// que a pessoa escolheu (30s, 1min, 1:30) em vez do tamanho original.
 export async function POST(req) {
   try {
     const { jobId, start, duration } = await req.json();
@@ -17,7 +16,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Dados incompletos.' }, { status: 400 });
     }
 
-    const workDir = path.join(process.cwd(), 'tmp', jobId);
+    const workDir = path.join(DATA_DIR, jobId);
     const inputPath = path.join(workDir, 'original.mp4');
     const segmentsPath = path.join(workDir, 'segments.json');
 
