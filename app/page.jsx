@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 function formatTime(t) {
   const m = Math.floor(t / 60);
@@ -25,7 +25,24 @@ export default function Home() {
   const [downloadingKey, setDownloadingKey] = useState(null);
   const [downloadedKey, setDownloadedKey] = useState(null);
   const [downloadError, setDownloadError] = useState(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const inputRef = useRef(null);
+
+  // Cronômetro: conta os segundos enquanto o vídeo está sendo processado
+  useEffect(() => {
+    if (status !== 'processing') return;
+    setElapsedSeconds(0);
+    const interval = setInterval(() => {
+      setElapsedSeconds((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [status]);
+
+  function formatElapsed(totalSeconds) {
+    const m = Math.floor(totalSeconds / 60);
+    const s = totalSeconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -210,9 +227,14 @@ export default function Home() {
         </form>
 
         {status === 'processing' && (
-          <p className="text-center font-mono text-xs text-paper/40 mt-4 animate-pulse">
-            transcrevendo → identificando destaques → cortando → legendando
-          </p>
+          <div className="text-center mt-6">
+            <p className="font-mono text-3xl text-timecode tabular-nums tracking-wider">
+              {formatElapsed(elapsedSeconds)}
+            </p>
+            <p className="font-mono text-xs text-paper/40 mt-2 animate-pulse">
+              transcrevendo → identificando destaques → cortando → legendando
+            </p>
+          </div>
         )}
 
         {error && (
