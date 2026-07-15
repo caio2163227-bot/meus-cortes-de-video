@@ -101,13 +101,11 @@ export default function Home() {
   const [mode, setMode] = useState('link'); // 'link' | 'file'
   const [file, setFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState('');
+  const [duration, setDuration] = useState(60);
   const [status, setStatus] = useState('idle'); // idle | uploading | processing | done | error
   const [jobId, setJobId] = useState(null);
   const [clips, setClips] = useState([]);
   const [error, setError] = useState(null);
-  const [downloadingKey, setDownloadingKey] = useState(null);
-  const [downloadedKey, setDownloadedKey] = useState(null);
-  const [downloadError, setDownloadError] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const inputRef = useRef(null);
 
@@ -142,6 +140,7 @@ export default function Home() {
       } else {
         formData.append('video', file);
       }
+      formData.append('duration', String(duration));
 
       const res = await fetch('/api/process', { method: 'POST', body: formData });
       const data = await res.json();
@@ -154,37 +153,6 @@ export default function Home() {
     } catch (err) {
       setError(err.message);
       setStatus('error');
-    }
-  }
-
-  async function handleDownload(clip, index, seconds) {
-    const key = `${index}-${seconds}`;
-    setDownloadingKey(key);
-    setDownloadError(null);
-
-    try {
-      const res = await fetch('/api/reclip', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId, start: clip.start, duration: seconds }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || 'Erro ao gerar o corte.');
-
-      const a = document.createElement('a');
-      a.href = data.file;
-      a.download = `corte-${index + 1}-${seconds}s.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      setDownloadedKey(key);
-      setTimeout(() => setDownloadedKey((k) => (k === key ? null : k)), 2500);
-    } catch (err) {
-      setDownloadError(err.message);
-    } finally {
-      setDownloadingKey(null);
     }
   }
 
@@ -305,6 +273,29 @@ export default function Home() {
               </div>
             )}
 
+            {/* Duração escolhida ANTES de gerar — a IA já entrega cortada nesse tamanho */}
+            <div className="mt-5">
+              <p className="font-mono text-[10px] text-paper/40 mb-2 tracking-wide">
+                DURAÇÃO DO CORTE
+              </p>
+              <div className="flex gap-2">
+                {DURATION_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.seconds}
+                    type="button"
+                    onClick={() => setDuration(opt.seconds)}
+                    className={`flex-1 border rounded-md py-2 text-xs font-mono transition-colors ${
+                      duration === opt.seconds
+                        ? 'border-signal bg-signal/10 text-signal'
+                        : 'border-wire text-paper/50 hover:border-signal/50'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={(mode === 'file' ? !file : !videoUrl.trim()) || status === 'processing'}
@@ -408,52 +399,21 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Escolha de duração pra baixar */}
-                  <div className="pt-4 border-t border-wire">
-                    <p className="font-mono text-[10px] text-paper/40 mb-2 tracking-wide">
-                      TOQUE PRA BAIXAR NESSA DURAÇÃO
-                    </p>
-                    <div className="flex gap-2">
-                      {DURATION_OPTIONS.map((opt) => {
-                        const key = `${i}-${opt.seconds}`;
-                        const isLoading = downloadingKey === key;
-                        const justDownloaded = downloadedKey === key;
-                        return (
-                          <button
-                            key={opt.seconds}
-                            onClick={() => handleDownload(clip, i, opt.seconds)}
-                            disabled={downloadingKey !== null}
-                            className={`flex-1 border rounded-md py-2 text-xs font-mono transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-1.5 ${
-                              justDownloaded
-                                ? 'border-signal bg-signal/10 text-signal'
-                                : 'border-wire hover:border-signal hover:text-signal disabled:opacity-30'
-                            }`}
-                          >
-                            {isLoading ? (
-                              '···'
-                            ) : justDownloaded ? (
-                              <>✓ Baixado</>
-                            ) : (
-                              <>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                  <path d="M12 3v13m0 0l-5-5m5 5l5-5M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                {opt.label}
-                              </>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  {/* Baixar — a duração já veio certa desde a geração */}
+                  
+                    href={clip.file}
+                    download={`corte-${i + 1}.mp4`}
+                    className="flex items-center justify-center gap-1.5 border border-wire hover:border-signal hover:text-signal rounded-md py-2 text-xs font-mono transition-colors"
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M12 3v13m0 0l-5-5m5 5l5-5M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    Baixar corte
+                  </a>
                 </div>
               </div>
             ))}
           </div>
-
-          {downloadError && (
-            <p className="text-center text-sm text-record mt-6">{downloadError}</p>
-          )}
         </section>
       )}
 
