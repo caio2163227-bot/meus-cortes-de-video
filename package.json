@@ -11,7 +11,8 @@
     "next": "^14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-   
+    "next-auth": "^4.24.7",
+    "bcryptjs": "^2.4.3",
     "openai": "^4.55.0",
     "fluent-ffmpeg": "^2.1.2",
     "ffmpeg-static": "^5.2.0",
@@ -19,7 +20,6 @@
     "formidable": "^3.5.1",
     "uuid": "^9.0.1",
     "yt-dlp-exec": "^1.0.2"
-  
   },
   "devDependencies": {
     "tailwindcss": "^3.4.7",

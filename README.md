@@ -30,9 +30,12 @@ Crie um arquivo `.env.local` na raiz do projeto com:
 ```
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
+NEXTAUTH_SECRET=uma-string-aleatoria-bem-longa
 ```
 - Pegue a chave da OpenAI em https://platform.openai.com/api-keys
 - Pegue a chave da Anthropic em https://console.anthropic.com/settings/keys
+- Gere o `NEXTAUTH_SECRET` (usado pra assinar a sessão de login) rodando
+  `openssl rand -base64 32` — sem ele o login não funciona
 
 ### 2.1 Sobre o download por link
 A biblioteca `yt-dlp-exec` baixa automaticamente o binário do `yt-dlp` na
@@ -57,7 +60,9 @@ sozinha tem limite de tempo de execução que pode não bastar. Recomendo:
 
 Em qualquer uma dessas, o processo é:
 1. Suba o código (via GitHub)
-2. Configure as variáveis de ambiente (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`)
+2. Configure as variáveis de ambiente (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`,
+   `NEXTAUTH_SECRET`, e `NEXTAUTH_URL` com a URL pública do site, ex:
+   `https://seusite.com`)
 3. Comando de build: `npm run build` — comando de start: `npm run start`
 
 ## Próximos passos sugeridos (na ordem que eu recomendo construir)
@@ -67,8 +72,9 @@ Em qualquer uma dessas, o processo é:
    Redis + BullMQ) e notificar quando terminar.
 2. **Armazenamento em nuvem** — hoje os clipes ficam salvos localmente em
    `/tmp`. Pra produção, subir pro Cloudflare R2 ou AWS S3 e servir por URL.
-3. **Login e limite de uso** — Supabase Auth é o caminho mais rápido pra
-   adicionar contas de usuário e cobrar por plano.
+3. **Limite de uso por conta** — já existe login (email/senha, contas
+   individuais com histórico separado). O próximo passo natural é limitar
+   quantos vídeos cada conta pode processar por mês.
 4. **Reenquadramento inteligente** — hoje o corte vertical centraliza o
    frame. Dá pra melhorar com detecção de rosto (ex: usando um modelo de
    detecção facial) pra seguir quem está falando.

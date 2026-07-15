@@ -2,18 +2,30 @@ import { NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import fs from 'fs';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { cutClip } from '@/lib/cutVideo';
-import { DATA_DIR } from '@/lib/jobIndex';
+import { DATA_DIR, getJobById } from '@/lib/jobIndex';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
 
 export async function POST(req) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Não autenticado.' }, { status: 401 });
+    }
+
     const { jobId, start, duration } = await req.json();
 
     if (jobId === undefined || start === undefined || !duration) {
       return NextResponse.json({ error: 'Dados incompletos.' }, { status: 400 });
+    }
+
+    const job = getJobById(jobId);
+    if (!job || job.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Vídeo não encontrado.' }, { status: 404 });
     }
 
     const workDir = path.join(DATA_DIR, jobId);
