@@ -17,7 +17,8 @@
     "ffmpeg-static": "^5.2.0",
     "ffprobe-static": "^3.1.0",
     "formidable": "^3.5.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "yt-dlp-exec": "^1.0.2"
   
   },
   "devDependencies": {
