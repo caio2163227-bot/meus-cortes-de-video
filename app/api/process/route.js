@@ -3,6 +3,8 @@ import { writeFile, mkdir } from 'fs/promises';
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { transcribeVideo } from '@/lib/transcribe';
 import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
@@ -16,6 +18,11 @@ export const maxDuration = 300;
 export async function POST(req) {
   let workDir;
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Faça login para gerar cortes.' }, { status: 401 });
+    }
+
     // Libera espaço apagando vídeos originais de jobs antigos, antes
     // de processar um novo (mantém os cortes finais no histórico).
     cleanupOldOriginals();
@@ -72,9 +79,10 @@ export async function POST(req) {
       clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
     }
 
-    // Guarda esse vídeo no histórico permanente
+    // Guarda esse vídeo no histórico permanente, vinculado a essa conta
     addJobToIndex({
       jobId,
+      userId: session.user.id,
       createdAt: new Date().toISOString(),
       sourceLabel,
       clips,
@@ -85,8 +93,7 @@ export async function POST(req) {
     console.error(err);
 
     // Se algo deu errado no meio do caminho, apaga a pasta desse job —
-    // senão fica lixo órfão ocupando espaço, já que ele nunca chegou a
-    // entrar no histórico (e por isso a limpeza automática não o vê).
+    // senão fica lixo órfão ocupando espaço.
     if (workDir && fs.existsSync(workDir)) {
       try {
         fs.rmSync(workDir, { recursive: true, force: true });
