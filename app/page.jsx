@@ -90,37 +90,46 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      {/* Cabeçalho / marca */}
+      {/* Cabeçalho — luz de gravação piscando, como a tally light de uma câmera */}
       <header className="border-b border-wire px-8 py-5 flex items-center justify-between">
-        <span className="font-mono text-sm tracking-widest text-paper/70">REC · 01</span>
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
+          </span>
+          <span className="font-mono text-xs tracking-widest text-paper/70">REC</span>
+        </div>
         <span className="font-display italic text-2xl">recorte</span>
-        <span className="font-mono text-sm tracking-widest text-paper/40">v0.1</span>
+        <span className="font-mono text-xs tracking-widest text-paper/40">v0.2</span>
       </header>
 
       {/* Hero — a linha do tempo é a tese do produto */}
       <section className="px-8 pt-16 pb-10 max-w-4xl mx-auto text-center">
         <h1 className="font-display text-5xl md:text-7xl leading-[1.05] mb-6">
-          Seu vídeo tem <span className="italic text-signal">3 minutos</span>
-          <br />que valem a pena cortar.
+          Seu vídeo tem <span className="italic text-signal">3 horas</span>
+          <br />que valem 20 segundos de atenção.
         </h1>
-        <p className="text-paper/60 max-w-xl mx-auto mb-12 text-lg">
+        <p className="text-paper/60 max-w-xl mx-auto mb-16 text-lg">
           Envie a gravação completa. A IA lê a transcrição, encontra os melhores
           momentos e devolve cortes verticais, com legenda, prontos pra postar.
         </p>
 
-        {/* Signature: linha do tempo com um trecho destacado — a metáfora do produto */}
-        <div className="relative h-20 mb-14 select-none">
+        {/* Signature: monitor de edição — linha do tempo com trecho destacado */}
+        <div className="relative h-9 mb-8 select-none">
           <div className="absolute inset-x-0 top-1/2 h-px bg-wire" />
-          <div className="absolute left-[38%] w-[22%] top-1/2 h-8 -translate-y-1/2 bg-signal/20 border border-signal rounded-sm flex items-center justify-center">
-            <span className="font-mono text-[10px] text-signal">01:42 → 02:19</span>
-          </div>
-          {Array.from({ length: 21 }).map((_, i) => (
+          {Array.from({ length: 41 }).map((_, i) => (
             <div
               key={i}
-              className="absolute top-1/2 w-px h-3 -translate-y-1/2 bg-wire"
-              style={{ left: `${(i / 20) * 100}%` }}
+              className={`absolute top-1/2 -translate-y-1/2 w-px bg-wire ${i % 5 === 0 ? 'h-4' : 'h-2'}`}
+              style={{ left: `${(i / 40) * 100}%` }}
             />
           ))}
+          <div className="absolute left-[38%] w-[22%] top-1/2 h-9 -translate-y-1/2 bg-signal/10 border border-signal rounded-sm flex items-center justify-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-signal" />
+            <span className="font-mono text-[10px] text-signal tracking-wide">01:42 → 02:19</span>
+          </div>
+          <span className="absolute left-0 top-full mt-2 font-mono text-[10px] text-timecode/60">00:00:00</span>
+          <span className="absolute right-0 top-full mt-2 font-mono text-[10px] text-timecode/60">03:00:00</span>
         </div>
       </section>
 
@@ -131,19 +140,28 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setMode('link')}
-            className={`flex-1 py-2 rounded-t-md border-b-2 transition-colors ${
+            className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
               mode === 'link' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
             }`}
           >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             COLAR LINK
           </button>
           <button
             type="button"
             onClick={() => setMode('file')}
-            className={`flex-1 py-2 rounded-t-md border-b-2 transition-colors ${
+            className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
               mode === 'file' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
             }`}
           >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" strokeLinecap="round" strokeLinejoin="round" />
+              <polyline points="17 8 12 3 7 8" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="12" x2="12" y1="3" y2="15" strokeLinecap="round" />
+            </svg>
             ENVIAR ARQUIVO
           </button>
         </div>
@@ -208,23 +226,37 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {clips.map((clip, i) => (
-              <div key={i} className="border border-wire rounded-md overflow-hidden">
-                <video src={clip.file} controls className="w-full aspect-[9/16] bg-black" />
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-mono text-[10px] text-signal">
-                      {formatTime(clip.start)} → {formatTime(clip.end)}
-                    </span>
-                    <span className="font-mono text-[10px] text-paper/40">
-                      score {clip.score}
-                    </span>
+              <div
+                key={i}
+                className="border border-wire rounded-md overflow-hidden hover:border-signal/40 transition-colors"
+              >
+                <div className="relative">
+                  <video src={clip.file} controls className="w-full aspect-[9/16] bg-black" />
+                  <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-ink/80 rounded font-mono text-[9px] text-timecode tracking-wide pointer-events-none">
+                    {formatTime(clip.start)} → {formatTime(clip.end)}
                   </div>
-                  <p className="font-display text-xl italic leading-snug">{clip.title}</p>
-                  <p className="text-paper/50 text-sm mt-2">{clip.reason}</p>
+                </div>
+                <div className="p-4">
+                  <p className="font-display text-xl italic leading-snug mb-2">{clip.title}</p>
+                  <p className="text-paper/50 text-sm mb-4">{clip.reason}</p>
+
+                  {/* Potencial viral — barra em vez de número solto */}
+                  <div className="mb-4">
+                    <div className="flex justify-between font-mono text-[9px] text-paper/40 mb-1 tracking-wide">
+                      <span>POTENCIAL VIRAL</span>
+                      <span className="text-timecode">{clip.score}/100</span>
+                    </div>
+                    <div className="h-1 bg-wire rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-timecode rounded-full"
+                        style={{ width: `${clip.score}%` }}
+                      />
+                    </div>
+                  </div>
 
                   {/* Escolha de duração pra baixar */}
-                  <div className="mt-4 pt-4 border-t border-wire">
-                    <p className="font-mono text-[10px] text-paper/40 mb-2">
+                  <div className="pt-4 border-t border-wire">
+                    <p className="font-mono text-[10px] text-paper/40 mb-2 tracking-wide">
                       TOQUE PRA BAIXAR NESSA DURAÇÃO
                     </p>
                     <div className="flex gap-2">
@@ -270,6 +302,12 @@ export default function Home() {
           )}
         </section>
       )}
+
+      <footer className="border-t border-wire px-8 py-6 text-center">
+        <p className="font-mono text-[10px] text-paper/30 tracking-[0.2em]">
+          RECORTE · CORTES AUTOMÁTICOS POR IA
+        </p>
+      </footer>
     </main>
   );
 }
