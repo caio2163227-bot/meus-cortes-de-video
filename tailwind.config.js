@@ -6,7 +6,8 @@ module.exports = {
       colors: {
         ink: '#0B0E11',
         paper: '#F6F4EF',
-        signal: '#FF4D2E',
+        signal: '#FF3B2E',
+        timecode: '#FFB238',
         wire: '#2A2F36',
       },
       fontFamily: {
