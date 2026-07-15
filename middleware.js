@@ -6,10 +6,9 @@ export default withAuth({
   },
 });
 
-// Temporariamente sem nenhuma rota protegida — o Volume está cheio e
-// precisamos acessar /historico pra apagar vídeos antigos, mas o login
-// também não funciona sem espaço livre. Depois de liberar espaço,
-// voltamos a proteger o histórico.
+// Só protege o histórico (que mostra dados pessoais). A página inicial
+// fica pública — quem quiser só ver a vitrine não precisa logar. Gerar
+// corte já é protegido separadamente dentro da própria rota da API.
 export const config = {
-  matcher: [],
+  matcher: ['/historico/:path*'],
 };
