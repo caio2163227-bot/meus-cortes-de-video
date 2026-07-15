@@ -14,6 +14,39 @@ const DURATION_OPTIONS = [
   { label: '1:30', seconds: 90 },
 ];
 
+const FEATURE_BADGES = [
+  {
+    label: 'Cortes automáticos',
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="6" cy="6" r="3" />
+        <circle cx="6" cy="18" r="3" />
+        <line x1="20" y1="4" x2="8.12" y2="15.88" />
+        <line x1="14.47" y1="14.48" x2="20" y2="20" />
+        <line x1="8.12" y1="8.12" x2="12" y2="12" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Reenquadramento vertical',
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 2v14a2 2 0 0 0 2 2h14" />
+        <path d="M18 22V8a2 2 0 0 0-2-2H2" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Legenda automática',
+    icon: (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="18" height="14" x="3" y="5" rx="2" />
+        <path d="M7 15h4M7 11h6" />
+      </svg>
+    ),
+  },
+];
+
 const FORMATS = [
   {
     label: 'PODCAST',
@@ -161,8 +194,8 @@ export default function Home() {
       <header className="border-b border-wire px-8 py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-record opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-record" />
           </span>
           <span className="font-mono text-xs tracking-widest text-paper/70">REC</span>
         </div>
@@ -204,77 +237,96 @@ export default function Home() {
 
       {/* Upload */}
       <section className="px-8 pb-24 max-w-xl mx-auto">
-        {/* Seletor de modo: colar link ou enviar arquivo */}
-        <div className="flex gap-1 mb-4 font-mono text-xs">
-          <button
-            type="button"
-            onClick={() => setMode('link')}
-            className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
-              mode === 'link' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
-            }`}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            COLAR LINK
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('file')}
-            className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
-              mode === 'file' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
-            }`}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" strokeLinecap="round" strokeLinejoin="round" />
-              <polyline points="17 8 12 3 7 8" strokeLinecap="round" strokeLinejoin="round" />
-              <line x1="12" x2="12" y1="3" y2="15" strokeLinecap="round" />
-            </svg>
-            ENVIAR ARQUIVO
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          {mode === 'link' ? (
-            <div className="border border-wire focus-within:border-signal/60 transition-colors rounded-md px-4 py-4">
-              <input
-                type="url"
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="https://youtube.com/watch?v=..."
-                className="w-full bg-transparent outline-none text-paper placeholder:text-paper/30"
-              />
-            </div>
-          ) : (
-            <div
-              onClick={() => inputRef.current?.click()}
-              className="border border-dashed border-wire hover:border-signal/60 transition-colors rounded-md p-10 text-center cursor-pointer"
+        {/* Cartão com brilho — como um monitor aceso num estúdio escuro */}
+        <div
+          className="rounded-xl border border-signal/30 bg-ink/60 p-6"
+          style={{ boxShadow: '0 0 80px -20px rgba(46, 95, 255, 0.45)' }}
+        >
+          {/* Seletor de modo: colar link ou enviar arquivo */}
+          <div className="flex gap-1 mb-4 font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => setMode('link')}
+              className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
+                mode === 'link' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
+              }`}
             >
-              <input
-                ref={inputRef}
-                type="file"
-                accept="video/*"
-                className="hidden"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-              />
-              <p className="font-mono text-xs tracking-widest text-paper/40 mb-2">
-                ARRASTE OU CLIQUE
-              </p>
-              <p className="text-paper/80">
-                {file ? file.name : 'Selecione o vídeo original (.mp4, .mov)'}
-              </p>
-            </div>
-          )}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              COLAR LINK
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('file')}
+              className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
+                mode === 'file' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
+              }`}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points="17 8 12 3 7 8" strokeLinecap="round" strokeLinejoin="round" />
+                <line x1="12" x2="12" y1="3" y2="15" strokeLinecap="round" />
+              </svg>
+              ENVIAR ARQUIVO
+            </button>
+          </div>
 
-          <button
-            type="submit"
-            disabled={(mode === 'file' ? !file : !videoUrl.trim()) || status === 'processing'}
-            className="mt-6 w-full bg-signal text-ink font-medium py-3 rounded-md disabled:opacity-30 disabled:cursor-not-allowed hover:bg-signal/90 transition-colors"
-          >
-            {status === 'processing' ? 'Analisando e cortando…' : 'Gerar cortes'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit}>
+            {mode === 'link' ? (
+              <div className="border border-wire focus-within:border-signal/60 transition-colors rounded-md px-4 py-4">
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  placeholder="https://youtube.com/watch?v=..."
+                  className="w-full bg-transparent outline-none text-paper placeholder:text-paper/30"
+                />
+              </div>
+            ) : (
+              <div
+                onClick={() => inputRef.current?.click()}
+                className="border border-dashed border-wire hover:border-signal/60 transition-colors rounded-md p-10 text-center cursor-pointer"
+              >
+                <input
+                  ref={inputRef}
+                  type="file"
+                  accept="video/*"
+                  className="hidden"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                />
+                <p className="font-mono text-xs tracking-widest text-paper/40 mb-2">
+                  ARRASTE OU CLIQUE
+                </p>
+                <p className="text-paper/80">
+                  {file ? file.name : 'Selecione o vídeo original (.mp4, .mov)'}
+                </p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={(mode === 'file' ? !file : !videoUrl.trim()) || status === 'processing'}
+              className="mt-6 w-full bg-signal text-paper font-medium py-3 rounded-md disabled:opacity-30 disabled:cursor-not-allowed hover:bg-signal/90 transition-colors"
+            >
+              {status === 'processing' ? 'Analisando e cortando…' : 'Gerar cortes'}
+            </button>
+          </form>
+
+          {/* Selos — o que o site faz, à mostra logo abaixo do botão principal */}
+          <div className="flex flex-wrap gap-2 justify-center mt-5">
+            {FEATURE_BADGES.map((b) => (
+              <span
+                key={b.label}
+                className="inline-flex items-center gap-1.5 border border-wire rounded-full px-3 py-1.5 text-[10px] font-mono text-paper/50"
+              >
+                {b.icon}
+                {b.label}
+              </span>
+            ))}
+          </div>
+        </div>
 
         {status === 'processing' && (
           <div className="text-center mt-6">
@@ -288,7 +340,7 @@ export default function Home() {
         )}
 
         {error && (
-          <p className="text-center text-sm text-signal mt-4">{error}</p>
+          <p className="text-center text-sm text-record mt-4">{error}</p>
         )}
       </section>
 
@@ -400,7 +452,7 @@ export default function Home() {
           </div>
 
           {downloadError && (
-            <p className="text-center text-sm text-signal mt-6">{downloadError}</p>
+            <p className="text-center text-sm text-record mt-6">{downloadError}</p>
           )}
         </section>
       )}
