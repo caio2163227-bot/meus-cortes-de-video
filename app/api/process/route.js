@@ -58,8 +58,8 @@ export async function POST(req) {
     const audioPath = path.join(workDir, 'audio.mp3');
     await extractAudio(inputPath, audioPath);
 
-    const { segments } = await transcribeVideo(audioPath);
-    await writeFile(path.join(workDir, 'segments.json'), JSON.stringify(segments));
+    const { segments, words } = await transcribeVideo(audioPath);
+    await writeFile(path.join(workDir, 'segments.json'), JSON.stringify({ segments, words }));
 
     const highlights = await findHighlights(segments, { targetDuration: duration });
 
@@ -70,11 +70,13 @@ export async function POST(req) {
       await cutClip({
         inputPath,
         segments,
+        words,
         start: h.start,
         end: h.end,
         outputPath,
         vertical: true,
         burnCaptions: true,
+        hookText: h.hookText,
       });
       clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
     }

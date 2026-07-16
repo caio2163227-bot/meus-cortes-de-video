@@ -39,7 +39,11 @@ export async function POST(req) {
       );
     }
 
-    const segments = JSON.parse(await readFile(segmentsPath, 'utf-8'));
+    const parsed = JSON.parse(await readFile(segmentsPath, 'utf-8'));
+    // Jobs antigos guardavam só o array de segments; jobs novos guardam
+    // { segments, words } pra dar pra legenda em blocos curtos também.
+    const segments = Array.isArray(parsed) ? parsed : parsed.segments;
+    const words = Array.isArray(parsed) ? [] : parsed.words || [];
 
     const end = start + duration;
     const filename = `reclip-${Math.round(start)}-${duration}s.mp4`;
@@ -48,6 +52,7 @@ export async function POST(req) {
     await cutClip({
       inputPath,
       segments,
+      words,
       start,
       end,
       outputPath,
