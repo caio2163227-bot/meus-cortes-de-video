@@ -405,6 +405,11 @@ export default function Home() {
                 </div>
                 <div className="p-4">
                   <p className="font-display text-xl italic leading-snug mb-2">{clip.title}</p>
+                  {clip.hook && (
+                    <p className="font-mono text-[10px] text-signal/80 border-l-2 border-signal/40 pl-2 mb-2 leading-relaxed">
+                      "{clip.hook}"
+                    </p>
+                  )}
                   <p className="text-paper/50 text-sm mb-4">{clip.reason}</p>
 
                   {/* Potencial viral — barra em vez de número solto */}
