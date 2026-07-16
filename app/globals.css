@@ -12,3 +12,22 @@ body {
   background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(46, 95, 255, 0.08), transparent);
   background-attachment: fixed;
 }
+
+/* Moldura de LED — texto correndo, tipo luz de marquise (app/layout.jsx) */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
