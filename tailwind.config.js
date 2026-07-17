@@ -10,6 +10,7 @@ module.exports = {
         record: '#FF3B2E',
         timecode: '#FFB238',
         wire: '#2A2F36',
+        gold: '#D4AF37',
       },
       fontFamily: {
         display: ['"Instrument Serif"', 'serif'],
