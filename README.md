@@ -31,16 +31,16 @@ Crie um arquivo `.env.local` na raiz do projeto com:
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 NEXTAUTH_SECRET=uma-string-aleatoria-bem-longa
-ADMIN_EMAIL=seu-email-de-login-no-site@exemplo.com
 ```
 - Pegue a chave da OpenAI em https://platform.openai.com/api-keys
 - Pegue a chave da Anthropic em https://console.anthropic.com/settings/keys
 - Gere o `NEXTAUTH_SECRET` (usado pra assinar a sessão de login) rodando
   `openssl rand -base64 32` — sem ele o login não funciona
-- `ADMIN_EMAIL` é o email da SUA conta (a que você usa pra logar no
-  próprio site) — só quem estiver logado com esse email consegue ver
-  os chamados de suporte em `/admin/suporte`. Sem essa variável, a
-  página de admin fica bloqueada pra todo mundo.
+
+O acesso à área de admin (`/admin/suporte`, onde ficam os chamados de
+suporte) é liberado pra um email fixo direto no código, em
+`lib/admin.js` — não precisa de variável de ambiente pra isso. Pra
+trocar quem é admin, edita esse arquivo e faz um novo deploy.
 
 ### 2.1 Sobre o download por link
 A biblioteca `yt-dlp-exec` baixa automaticamente o binário do `yt-dlp` na
@@ -66,8 +66,8 @@ sozinha tem limite de tempo de execução que pode não bastar. Recomendo:
 Em qualquer uma dessas, o processo é:
 1. Suba o código (via GitHub)
 2. Configure as variáveis de ambiente (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`,
-   `NEXTAUTH_SECRET`, `ADMIN_EMAIL`, e `NEXTAUTH_URL` com a URL pública do
-   site, ex: `https://seusite.com`)
+   `NEXTAUTH_SECRET`, e `NEXTAUTH_URL` com a URL pública do site, ex:
+   `https://seusite.com`)
 3. Comando de build: `npm run build` — comando de start: `npm run start`
 
 ## Próximos passos sugeridos (na ordem que eu recomendo construir)

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getAllTickets } from '@/lib/support';
+import { isAdminSession } from '@/lib/admin';
 import TicketStatusButton from './TicketStatusButton';
 
 export const dynamic = 'force-dynamic';
@@ -25,9 +26,8 @@ function formatDate(iso) {
 
 export default async function AdminSuporte() {
   const session = await getServerSession(authOptions);
-  const isAdmin = Boolean(process.env.ADMIN_EMAIL && session?.user?.email === process.env.ADMIN_EMAIL);
 
-  if (!isAdmin) {
+  if (!isAdminSession(session)) {
     redirect('/');
   }
 

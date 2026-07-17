@@ -2,16 +2,12 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { setTicketStatus } from '@/lib/support';
-
-function isAdmin(session) {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  return Boolean(adminEmail && session?.user?.email === adminEmail);
-}
+import { isAdminSession } from '@/lib/admin';
 
 export async function PATCH(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!isAdmin(session)) {
+    if (!isAdminSession(session)) {
       return NextResponse.json({ error: 'Não autorizado.' }, { status: 403 });
     }
 
