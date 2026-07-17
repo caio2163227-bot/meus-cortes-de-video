@@ -47,6 +47,32 @@ export default function RootLayout({ children }) {
           </div>
         </a>
 
+        {/* Suporte — sempre visível, em qualquer página, mesmo se o site
+            estiver com problema pra fazer login */}
+        <a
+          href="/suporte"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-1.5 bg-ink/90 border border-wire hover:border-signal/60 rounded-full px-3 py-1.5 backdrop-blur-sm transition-colors group"
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-paper/40 group-hover:text-signal transition-colors"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" x2="12.01" y1="17" y2="17" />
+          </svg>
+          <span className="font-mono text-[10px] tracking-widest text-paper/50 group-hover:text-signal transition-colors">
+            SUPORTE
+          </span>
+        </a>
+
         {/* Moldura de LED — texto correndo ao redor da tela, tipo luz de marquise */}
         <div className="fixed inset-0 z-30 pointer-events-none">
           {/* Cima — corre pra direita */}
