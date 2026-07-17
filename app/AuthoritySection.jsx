@@ -1,21 +1,36 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import {
+  DollarSign,
+  Video,
+  Bitcoin,
+  GraduationCap,
+  Link2,
+  ShieldCheck,
+  ShoppingBag,
+  Package,
+  Target,
+  Search,
+  Megaphone,
+  BarChart3,
+  Network,
+} from 'lucide-react';
 
 const AUTHORITY_MESSAGES = [
-  'Mais de R$ 1 milhão movimentados com negócios digitais.',
-  'Experiência em criação de conteúdo e monetização de vídeos.',
-  'Atuação com criptomoedas e ativos digitais.',
-  'Mercado de infoprodutos.',
-  'Marketing de afiliados.',
-  'Corretor de seguros.',
-  'TikTok Shop Seller.',
-  'Venda de produtos físicos.',
-  'Tráfego pago.',
-  'Google Ads.',
-  'Facebook Ads.',
-  'Estratégias de monetização na internet.',
-  'Diversas fontes de renda construídas no mercado digital.',
+  { text: 'Mais de R$ 1 milhão movimentados com negócios digitais.', Icon: DollarSign },
+  { text: 'Experiência em criação de conteúdo e monetização de vídeos.', Icon: Video },
+  { text: 'Atuação com criptomoedas e ativos digitais.', Icon: Bitcoin },
+  { text: 'Mercado de infoprodutos.', Icon: GraduationCap },
+  { text: 'Marketing de afiliados.', Icon: Link2 },
+  { text: 'Corretor de seguros.', Icon: ShieldCheck },
+  { text: 'TikTok Shop Seller.', Icon: ShoppingBag },
+  { text: 'Venda de produtos físicos.', Icon: Package },
+  { text: 'Tráfego pago.', Icon: Target },
+  { text: 'Google Ads.', Icon: Search },
+  { text: 'Facebook Ads.', Icon: Megaphone },
+  { text: 'Estratégias de monetização na internet.', Icon: BarChart3 },
+  { text: 'Diversas fontes de renda construídas no mercado digital.', Icon: Network },
 ];
 
 const ROTATE_MS = 3200;
@@ -51,6 +66,8 @@ export default function AuthoritySection() {
     return () => clearInterval(cycle);
   }, []);
 
+  const { text, Icon } = AUTHORITY_MESSAGES[index];
+
   return (
     <section className="relative px-8 py-32 md:py-40 overflow-hidden bg-ink border-t border-wire">
       {/* Brilho dourado no fundo, tipo luz de estúdio — dá o toque "premium" */}
@@ -63,9 +80,21 @@ export default function AuthoritySection() {
       />
 
       <div className="relative max-w-4xl mx-auto text-center">
-        <p className="font-mono text-xs tracking-[0.35em] text-gold/70 mb-10">
+        <p className="font-mono text-xs tracking-[0.35em] text-gold/70 mb-8">
           CAIO BRITO · AUTORIDADE DIGITAL
         </p>
+
+        {/* Ícone — troca em sincronia com a frase, como um selinho de categoria */}
+        <div className="flex justify-center mb-6">
+          <div
+            className={`w-16 h-16 rounded-full border border-gold/30 bg-ink/60 flex items-center justify-center transition-all ease-out ${
+              visible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
+            }`}
+            style={{ transitionDuration: `${TRANSITION_MS}ms` }}
+          >
+            <Icon size={26} strokeWidth={1.5} className="text-gold" />
+          </div>
+        </div>
 
         <div className="min-h-[8rem] md:min-h-[10rem] flex items-center justify-center">
           <p
@@ -74,7 +103,7 @@ export default function AuthoritySection() {
             }`}
             style={{ transitionDuration: `${TRANSITION_MS}ms` }}
           >
-            {renderMessage(AUTHORITY_MESSAGES[index])}
+            {renderMessage(text)}
           </p>
         </div>
 
