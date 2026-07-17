@@ -109,6 +109,7 @@ export default function Home() {
   const [clips, setClips] = useState([]);
   const [error, setError] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [deleteCountdown, setDeleteCountdown] = useState(null);
   const inputRef = useRef(null);
 
   // Cronômetro: conta os segundos enquanto o vídeo está sendo processado
@@ -117,6 +118,17 @@ export default function Home() {
     setElapsedSeconds(0);
     const interval = setInterval(() => {
       setElapsedSeconds((s) => s + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [status]);
+
+  // Contagem regressiva pro apagão automático — os cortes somem do
+  // servidor 1 minuto depois de prontos, pra não pesar o armazenamento.
+  useEffect(() => {
+    if (status !== 'done') return;
+    setDeleteCountdown(60);
+    const interval = setInterval(() => {
+      setDeleteCountdown((s) => (s !== null && s > 0 ? s - 1 : 0));
     }, 1000);
     return () => clearInterval(interval);
   }, [status]);
@@ -388,6 +400,19 @@ export default function Home() {
       {/* Resultados */}
       {clips.length > 0 && (
         <section className="px-8 pb-24 max-w-5xl mx-auto">
+          {/* Aviso de apagão — os cortes não ficam guardados no servidor */}
+          <div className="border border-record/40 bg-record/10 rounded-md px-4 py-3 mb-6 flex items-center justify-between gap-4 flex-wrap">
+            <p className="text-sm text-paper/80">
+              <strong className="text-record">Baixe seus cortes agora.</strong> Pra não pesar o
+              servidor, eles são apagados automaticamente depois disso.
+            </p>
+            {deleteCountdown !== null && (
+              <span className="font-mono text-xs text-record tracking-wide whitespace-nowrap">
+                APAGA EM {formatTime(deleteCountdown)}
+              </span>
+            )}
+          </div>
+
           <h2 className="font-mono text-xs tracking-widest text-paper/40 mb-6">
             {clips.length} CORTES ENCONTRADOS
           </h2>

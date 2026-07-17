@@ -1,11 +1,15 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { getAllJobs } from '@/lib/jobIndex';
+import { getAllJobs, ensureCleanupScheduler } from '@/lib/jobIndex';
 import DeleteButton from './DeleteButton';
 
 // Impede o Next.js de "engessar" essa página numa versão fixa do build —
 // assim ela sempre confere o histórico atualizado a cada visita.
 export const dynamic = 'force-dynamic';
+
+// Garante que o relógio de limpeza automática esteja rodando mesmo se
+// ninguém tiver gerado corte ainda nessa instância do servidor.
+ensureCleanupScheduler();
 
 function formatDate(iso) {
   const d = new Date(iso);
@@ -37,9 +41,12 @@ export default async function Historico() {
       </header>
 
       <section className="px-8 py-16 max-w-5xl mx-auto">
+        <p className="text-center font-mono text-[10px] text-paper/30 tracking-wide mb-10">
+          OS CORTES FICAM DISPONÍVEIS SÓ POR 1 MINUTO APÓS SEREM GERADOS · BAIXE NA HORA
+        </p>
         {jobs.length === 0 ? (
           <p className="text-center text-paper/40 font-mono text-sm">
-            Nenhum vídeo processado ainda.
+            Nenhum vídeo processado ainda (ou os últimos já expiraram).
           </p>
         ) : (
           <div className="space-y-16">

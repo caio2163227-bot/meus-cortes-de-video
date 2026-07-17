@@ -10,10 +10,14 @@ import { findHighlights } from '@/lib/highlights';
 import { cutClip } from '@/lib/cutVideo';
 import { extractAudio } from '@/lib/extractAudio';
 import { downloadFromUrl, isVideoUrl } from '@/lib/downloadVideo';
-import { DATA_DIR, addJobToIndex, cleanupOldOriginals } from '@/lib/jobIndex';
+import { DATA_DIR, addJobToIndex, cleanupOldOriginals, ensureCleanupScheduler } from '@/lib/jobIndex';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
+
+// Garante que o relógio de limpeza automática (apaga cortes com mais
+// de 1 minuto) esteja rodando — só precisa ligar uma vez por processo.
+ensureCleanupScheduler();
 
 export async function POST(req) {
   let workDir;
