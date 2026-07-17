@@ -1,5 +1,6 @@
 import './globals.css';
 import Providers from './providers';
+import { ADSENSE_CLIENT_ID } from '@/lib/ads';
 
 export const metadata = {
   title: 'Recorte — cortes automáticos por IA',
@@ -17,6 +18,15 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
+        {/* Script do Google AdSense — só carrega se o publisher ID estiver
+            preenchido em lib/ads.js */}
+        {ADSENSE_CLIENT_ID && (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
       <body className="bg-ink text-paper font-body p-4">
         <Providers>{children}</Providers>

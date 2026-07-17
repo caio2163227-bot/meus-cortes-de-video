@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import AuthoritySection from './AuthoritySection';
+import AdSlot from './AdSlot';
 
 function formatTime(t) {
   const m = Math.floor(t / 60);
@@ -472,9 +473,16 @@ export default function Home() {
 
       <AuthoritySection />
 
+      <AdSlot slot="1234567890" />
+
       <footer className="border-t border-wire px-8 py-6 text-center">
-        <p className="font-mono text-[10px] text-paper/30 tracking-[0.2em]">
+        <p className="font-mono text-[10px] text-paper/30 tracking-[0.2em] mb-3">
           RECORTE · CORTES AUTOMÁTICOS POR IA
+        </p>
+        <p className="font-mono text-[10px] text-paper/30 tracking-wide">
+          <a href="/privacidade" className="hover:text-signal transition-colors">Privacidade</a>
+          <span className="mx-2">·</span>
+          <a href="/termos" className="hover:text-signal transition-colors">Termos</a>
         </p>
       </footer>
     </main>
