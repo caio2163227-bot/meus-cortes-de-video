@@ -76,25 +76,25 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-wire px-8 py-5 flex items-center justify-between">
-        <a href="/" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
+      <header className="border-b border-wire px-4 sm:px-8 py-4 sm:py-5 flex flex-wrap items-center justify-between gap-3">
+        <a href="/" className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
           ← INÍCIO
         </a>
         <span className="font-display italic text-2xl">dashboard</span>
-        <div className="flex items-center gap-4">
-          <a href="/historico" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
+        <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end order-3 sm:order-none">
+          <a href="/historico" className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
             HISTÓRICO →
           </a>
           {session?.user ? (
             <button
               type="button"
               onClick={() => signOut({ callbackUrl: '/login' })}
-              className="font-mono text-xs tracking-widest text-paper/40 hover:text-record transition-colors border-l border-wire pl-4"
+              className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-record transition-colors border-l border-wire pl-3 sm:pl-4"
             >
               SAIR
             </button>
           ) : (
-            <a href="/login" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors border-l border-wire pl-4">
+            <a href="/login" className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-signal transition-colors border-l border-wire pl-3 sm:pl-4">
               ENTRAR
             </a>
           )}

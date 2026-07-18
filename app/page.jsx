@@ -203,7 +203,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Cabeçalho — luz de gravação piscando, como a tally light de uma câmera */}
-      <header className="border-b border-wire px-8 py-5 flex items-center justify-between">
+      <header className="border-b border-wire px-4 sm:px-8 py-4 sm:py-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-record opacity-75" />
@@ -212,28 +212,28 @@ export default function Home() {
           <span className="font-mono text-xs tracking-widest text-paper/70">REC</span>
         </div>
         <span className="font-display italic text-2xl">recorte</span>
-        <div className="flex items-center gap-4">
-          <a href="/dashboard" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
+        <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end order-3 sm:order-none">
+          <a href="/dashboard" className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
             DASHBOARD
           </a>
-          <a href="/historico" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
+          <a href="/historico" className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
             HISTÓRICO →
           </a>
           {session?.user ? (
-            <div className="flex items-center gap-2 border-l border-wire pl-4">
+            <div className="flex items-center gap-2 border-l border-wire pl-3 sm:pl-4">
               <span className="font-mono text-xs text-paper/40 hidden sm:inline">
                 {session.user.name}
               </span>
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: '/login' })}
-                className="font-mono text-xs tracking-widest text-paper/40 hover:text-record transition-colors"
+                className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-record transition-colors"
               >
                 SAIR
               </button>
             </div>
           ) : (
-            <a href="/login" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors border-l border-wire pl-4">
+            <a href="/login" className="font-mono text-[10px] sm:text-xs tracking-widest text-paper/40 hover:text-signal transition-colors border-l border-wire pl-3 sm:pl-4">
               ENTRAR
             </a>
           )}
