@@ -114,6 +114,7 @@ export default function Home() {
   const [deleteCountdown, setDeleteCountdown] = useState(null);
   const [usage, setUsage] = useState(null); // { used, limit } | null enquanto carrega
   const inputRef = useRef(null);
+  const resultsRef = useRef(null);
 
   // Busca quantos cortes já foram gerados hoje — assim que loga, e de
   // novo depois de cada corte gerado com sucesso.
@@ -152,6 +153,15 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [status]);
 
+  // Os cortes ficam prontos, mas a seção de resultados nasce lá embaixo,
+  // depois de uma seção inteira de marketing — sem isso, quem gerou o
+  // corte acha que "não aconteceu nada" porque nunca rola até ver.
+  useEffect(() => {
+    if (status === 'done' && clips.length > 0) {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [status, clips]);
+
   function formatElapsed(totalSeconds) {
     const m = Math.floor(totalSeconds / 60);
     const s = totalSeconds % 60;
@@ -161,14 +171,14 @@ export default function Home() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (mode === 'file' && !file) return;
-    if (mode === 'link' && !videoUrl.trim()) return;
+    if (mode !== 'file' && !videoUrl.trim()) return;
 
     setStatus('processing');
     setError(null);
 
     try {
       const formData = new FormData();
-      if (mode === 'link') {
+      if (mode !== 'file') {
         formData.append('videoUrl', videoUrl.trim());
       } else {
         formData.append('video', file);
@@ -281,6 +291,19 @@ export default function Home() {
             </button>
             <button
               type="button"
+              onClick={() => setMode('shorts')}
+              className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
+                mode === 'shorts' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
+              }`}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="7" y="2" width="10" height="20" rx="2" strokeLinecap="round" strokeLinejoin="round" />
+                <line x1="11" y1="18" x2="13" y2="18" strokeLinecap="round" />
+              </svg>
+              LINK DO SHORTS
+            </button>
+            <button
+              type="button"
               onClick={() => setMode('file')}
               className={`flex-1 py-2.5 rounded-t-md border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
                 mode === 'file' ? 'border-signal text-signal' : 'border-wire text-paper/40 hover:text-paper/70'
@@ -296,13 +319,17 @@ export default function Home() {
           </div>
 
           <form onSubmit={handleSubmit}>
-            {mode === 'link' ? (
+            {mode !== 'file' ? (
               <div className="border border-wire focus-within:border-signal/60 transition-colors rounded-md px-4 py-4">
                 <input
                   type="url"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="https://youtube.com/watch?v=..."
+                  placeholder={
+                    mode === 'shorts'
+                      ? 'https://youtube.com/shorts/...'
+                      : 'https://youtube.com/watch?v=...'
+                  }
                   className="w-full bg-transparent outline-none text-paper placeholder:text-paper/30"
                 />
               </div>
@@ -435,7 +462,7 @@ export default function Home() {
 
       {/* Resultados */}
       {clips.length > 0 && (
-        <section className="px-8 pb-24 max-w-5xl mx-auto">
+        <section ref={resultsRef} className="px-8 pb-24 max-w-5xl mx-auto">
           {/* Aviso de apagão — os cortes não ficam guardados no servidor */}
           <div className="border border-record/40 bg-record/10 rounded-md px-4 py-3 mb-6 flex items-center justify-between gap-4 flex-wrap">
             <p className="text-sm text-paper/80">
