@@ -24,21 +24,6 @@ export default function Dashboard() {
   const [clip, setClip] = useState(null);
   const [error, setError] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [usage, setUsage] = useState(null);
-
-  async function refreshUsage() {
-    try {
-      const res = await fetch('/api/usage');
-      if (!res.ok) return;
-      setUsage(await res.json());
-    } catch {
-      // não é crítico pra usar o site
-    }
-  }
-
-  useEffect(() => {
-    if (session?.user) refreshUsage();
-  }, [session?.user]);
 
   useEffect(() => {
     if (status !== 'processing') return;
@@ -67,7 +52,6 @@ export default function Dashboard() {
 
       setClip(data.clips[0]);
       setStatus('done');
-      refreshUsage();
     } catch (err) {
       setError(err.message);
       setStatus('error');
@@ -153,23 +137,11 @@ export default function Dashboard() {
 
             <button
               type="submit"
-              disabled={!text.trim() || status === 'processing' || (usage && usage.used >= usage.limit)}
+              disabled={!text.trim() || status === 'processing'}
               className="mt-6 w-full bg-signal text-paper font-medium py-3 rounded-md disabled:opacity-30 disabled:cursor-not-allowed hover:bg-signal/90 transition-colors"
             >
-              {status === 'processing'
-                ? 'Narrando e montando…'
-                : usage && usage.used >= usage.limit
-                ? 'Limite diário atingido'
-                : 'Gerar vídeo'}
+              {status === 'processing' ? 'Narrando e montando…' : 'Gerar vídeo'}
             </button>
-
-            {usage && (
-              <p className="text-center font-mono text-[10px] text-paper/30 tracking-wide mt-3">
-                {usage.used >= usage.limit
-                  ? `Você usou os ${usage.limit} vídeos de hoje — volta amanhã.`
-                  : `${usage.used}/${usage.limit} vídeos usados hoje`}
-              </p>
-            )}
           </form>
         </div>
 

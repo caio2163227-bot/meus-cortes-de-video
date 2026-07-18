@@ -112,25 +112,8 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [deleteCountdown, setDeleteCountdown] = useState(null);
-  const [usage, setUsage] = useState(null); // { used, limit } | null enquanto carrega
   const inputRef = useRef(null);
   const resultsRef = useRef(null);
-
-  // Busca quantos cortes já foram gerados hoje — assim que loga, e de
-  // novo depois de cada corte gerado com sucesso.
-  async function refreshUsage() {
-    try {
-      const res = await fetch('/api/usage');
-      if (!res.ok) return;
-      setUsage(await res.json());
-    } catch {
-      // Se falhar, só não mostra o contador — não é crítico pra usar o site.
-    }
-  }
-
-  useEffect(() => {
-    if (session?.user) refreshUsage();
-  }, [session?.user]);
 
   // Cronômetro: conta os segundos enquanto o vídeo está sendo processado
   useEffect(() => {
@@ -193,7 +176,6 @@ export default function Home() {
       setJobId(data.jobId);
       setClips(data.clips);
       setStatus('done');
-      refreshUsage();
     } catch (err) {
       setError(err.message);
       setStatus('error');
@@ -382,27 +364,11 @@ export default function Home() {
 
             <button
               type="submit"
-              disabled={
-                (mode === 'file' ? !file : !videoUrl.trim()) ||
-                status === 'processing' ||
-                (usage && usage.used >= usage.limit)
-              }
+              disabled={(mode === 'file' ? !file : !videoUrl.trim()) || status === 'processing'}
               className="mt-6 w-full bg-signal text-paper font-medium py-3 rounded-md disabled:opacity-30 disabled:cursor-not-allowed hover:bg-signal/90 transition-colors"
             >
-              {status === 'processing'
-                ? 'Analisando e cortando…'
-                : usage && usage.used >= usage.limit
-                ? 'Limite diário atingido'
-                : 'Gerar cortes'}
+              {status === 'processing' ? 'Analisando e cortando…' : 'Gerar cortes'}
             </button>
-
-            {usage && (
-              <p className="text-center font-mono text-[10px] text-paper/30 tracking-wide mt-3">
-                {usage.used >= usage.limit
-                  ? `Você usou os ${usage.limit} cortes de hoje — volta amanhã.`
-                  : `${usage.used}/${usage.limit} cortes usados hoje`}
-              </p>
-            )}
           </form>
 
           {/* Selos — o que o site faz, à mostra logo abaixo do botão principal */}
