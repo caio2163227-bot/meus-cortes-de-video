@@ -8,7 +8,7 @@ import { authOptions } from '@/lib/auth';
 import { synthesizeSpeech } from '@/lib/tts';
 import { renderTextVideo, getAudioDuration } from '@/lib/cutVideo';
 import { DATA_DIR, addJobToIndex, cleanupOldOriginals, ensureCleanupScheduler } from '@/lib/jobIndex';
-import { DAILY_LIMIT, hasReachedDailyLimit, incrementUsage } from '@/lib/usage';
+import { incrementUsage } from '@/lib/usage';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -24,13 +24,6 @@ export async function POST(req) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Faça login para gerar vídeos.' }, { status: 401 });
-    }
-
-    if (hasReachedDailyLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: `Você atingiu o limite de ${DAILY_LIMIT} vídeos hoje. Volta amanhã pra gerar mais.` },
-        { status: 429 }
-      );
     }
 
     cleanupOldOriginals();

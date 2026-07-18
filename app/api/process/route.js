@@ -11,7 +11,7 @@ import { cutClip, extractFrame } from '@/lib/cutVideo';
 import { extractAudio } from '@/lib/extractAudio';
 import { downloadFromUrl, isVideoUrl } from '@/lib/downloadVideo';
 import { DATA_DIR, addJobToIndex, cleanupOldOriginals, ensureCleanupScheduler } from '@/lib/jobIndex';
-import { DAILY_LIMIT, hasReachedDailyLimit, incrementUsage } from '@/lib/usage';
+import { incrementUsage } from '@/lib/usage';
 import { detectFaceCenterX } from '@/lib/faceDetect';
 
 export const runtime = 'nodejs';
@@ -27,13 +27,6 @@ export async function POST(req) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Faça login para gerar cortes.' }, { status: 401 });
-    }
-
-    if (hasReachedDailyLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: `Você atingiu o limite de ${DAILY_LIMIT} vídeos hoje. Volta amanhã pra gerar mais.` },
-        { status: 429 }
-      );
     }
 
     // Libera espaço apagando vídeos originais de jobs antigos, antes
