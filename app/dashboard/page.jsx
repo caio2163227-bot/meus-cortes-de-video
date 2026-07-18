@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 
 const VOICES = [
-  { id: 'pt-BR-FranciscaNeural', label: 'Francisca', desc: 'feminina' },
-  { id: 'pt-BR-AntonioNeural', label: 'Antônio', desc: 'masculina' },
+  { id: 'pt-BR-Wavenet-A', label: 'Voz 1', desc: 'feminina' },
+  { id: 'pt-BR-Wavenet-B', label: 'Voz 2', desc: 'masculina' },
 ];
 
 const MAX_CHARS = 800;

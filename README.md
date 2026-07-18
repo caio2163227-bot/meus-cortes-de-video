@@ -42,6 +42,20 @@ suporte) é liberado pra um email fixo direto no código, em
 `lib/admin.js` — não precisa de variável de ambiente pra isso. Pra
 trocar quem é admin, edita esse arquivo e faz um novo deploy.
 
+### 2.0 Voz do dashboard (texto → vídeo)
+A função de criar vídeo a partir de texto (`/dashboard`) narra o texto com a
+API oficial do Google Cloud Text-to-Speech. Precisa de:
+```
+GOOGLE_TTS_API_KEY=...
+```
+- Crie um projeto em https://console.cloud.google.com, ative a "Cloud
+  Text-to-Speech API" e gere uma chave de API em "APIs e serviços" →
+  "Credenciais". Precisa de uma conta com cartão cadastrado (a Google exige
+  isso pra ativar a API), mas o uso dentro da cota gratuita mensal não é
+  cobrado.
+- Sem essa variável configurada, o dashboard mostra um erro pedindo pra
+  avisar o suporte, mas o resto do site funciona normalmente.
+
 ### 2.1 Sobre o download por link
 A biblioteca `yt-dlp-exec` baixa automaticamente o binário do `yt-dlp` na
 primeira execução. Em alguns hosts (ex: containers minimalistas) pode ser
