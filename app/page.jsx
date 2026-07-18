@@ -213,6 +213,9 @@ export default function Home() {
         </div>
         <span className="font-display italic text-2xl">recorte</span>
         <div className="flex items-center gap-4">
+          <a href="/dashboard" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
+            DASHBOARD
+          </a>
           <a href="/historico" className="font-mono text-xs tracking-widest text-paper/40 hover:text-signal transition-colors">
             HISTÓRICO →
           </a>
