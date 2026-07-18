@@ -51,6 +51,15 @@ export default function Privacidade() {
         </div>
 
         <div>
+          <h2 className="font-display italic text-xl text-paper mb-2">Metadados dos cortes</h2>
+          <p>
+            Todo corte gerado sai limpo de metadados — removemos informações como localização,
+            autor, dispositivo e data de gravação que o arquivo original possa ter. O arquivo final
+            só carrega o que é tecnicamente necessário pra um vídeo funcionar (formato, codec).
+          </p>
+        </div>
+
+        <div>
           <h2 className="font-display italic text-xl text-paper mb-2">Serviços de terceiros que usamos</h2>
           <p>
             Pra transcrever e escolher os melhores trechos do seu vídeo, enviamos o áudio pra API da{' '}
