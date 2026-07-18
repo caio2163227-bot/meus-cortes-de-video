@@ -47,17 +47,29 @@ export async function POST(req) {
     await mkdir(workDir, { recursive: true });
 
     const { audioPath, words } = await synthesizeSpeech(text, voice, workDir);
-    const duration = await getAudioDuration(audioPath);
+
+    // A duração vem do timestamp da própria síntese (último "word boundary"
+    // + uma folga) em vez do ffprobe — assim esse passo, que é essencial
+    // (define o tamanho do fundo do vídeo), não depende de um binário
+    // externo que pode não estar disponível em todo ambiente.
+    const lastWordEnd = words.length > 0 ? words[words.length - 1].end : 0;
+    const duration = lastWordEnd > 0 ? lastWordEnd + 0.4 : await getAudioDuration(audioPath);
 
     const outputPath = path.join(workDir, 'clip-1.mp4');
     await renderTextVideo({ audioPath, words, duration, outputPath });
 
-    // Mesma checagem do fluxo de cortes: garante que o vídeo final saiu
-    // válido antes de entregar, em vez de arriscar mandar um arquivo
-    // corrompido que "carrega e não mostra nada" pro usuário.
-    const finalDuration = await getAudioDuration(outputPath).catch(() => 0);
-    if (!finalDuration || finalDuration < 0.5) {
-      throw new Error('O vídeo saiu inválido dessa vez — o servidor pode estar sobrecarregado. Tenta de novo em instantes.');
+    // Confere se o vídeo final saiu válido antes de entregar — mas só
+    // bloqueia quando o ffprobe CONSEGUE rodar e confirma o problema. Se a
+    // checagem em si falhar (ex: ffprobe indisponível), não é sinal de que
+    // o vídeo está quebrado, então deixa passar.
+    try {
+      const finalDuration = await getAudioDuration(outputPath);
+      if (!finalDuration || finalDuration < 0.5) {
+        throw new Error('O vídeo saiu inválido dessa vez — o servidor pode estar sobrecarregado. Tenta de novo em instantes.');
+      }
+    } catch (err) {
+      if (err.message?.includes('sobrecarregado')) throw err;
+      console.error('Não consegui checar o vídeo final via ffprobe (mantendo mesmo assim):', err.message);
     }
 
     const title = text.length > 60 ? text.slice(0, 57) + '...' : text;

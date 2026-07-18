@@ -103,19 +103,20 @@ export async function POST(req) {
       });
 
       // Confere se o corte saiu de verdade (arquivo com duração real) antes
-      // de oferecer ele — sem isso, um corte que falha no meio da
-      // codificação (ex: servidor sobrecarregado) vira um vídeo quebrado
-      // que "carrega e não mostra nada" pro usuário, sem nenhum aviso.
-      let clipDuration = 0;
+      // de oferecer ele. IMPORTANTE: só descarta quando o ffprobe CONSEGUE
+      // rodar e confirma um arquivo inválido — se a checagem em si falhar
+      // (ex: ffprobe indisponível nesse ambiente), não é sinal de que o
+      // corte está quebrado, então deixa passar em vez de derrubar cortes
+      // bons por causa de uma checagem extra que não funcionou.
       try {
-        clipDuration = await getAudioDuration(outputPath);
+        const clipDuration = await getAudioDuration(outputPath);
+        if (!clipDuration || clipDuration < 0.5) {
+          console.error(`Corte ${i + 1} descartado — duração inválida (${clipDuration}s).`);
+          if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+          continue;
+        }
       } catch (err) {
-        console.error(`Corte ${i + 1} saiu inválido (não abre no ffprobe):`, err.message);
-      }
-      if (!clipDuration || clipDuration < 0.5) {
-        console.error(`Corte ${i + 1} descartado — duração inválida (${clipDuration}s).`);
-        if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
-        continue;
+        console.error(`Não consegui checar o corte ${i + 1} via ffprobe (mantendo o corte mesmo assim):`, err.message);
       }
 
       clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
