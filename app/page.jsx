@@ -114,6 +114,7 @@ export default function Home() {
   const [deleteCountdown, setDeleteCountdown] = useState(null);
   const [usage, setUsage] = useState(null); // { used, limit } | null enquanto carrega
   const inputRef = useRef(null);
+  const resultsRef = useRef(null);
 
   // Busca quantos cortes já foram gerados hoje — assim que loga, e de
   // novo depois de cada corte gerado com sucesso.
@@ -151,6 +152,15 @@ export default function Home() {
     }, 1000);
     return () => clearInterval(interval);
   }, [status]);
+
+  // Os cortes ficam prontos, mas a seção de resultados nasce lá embaixo,
+  // depois de uma seção inteira de marketing — sem isso, quem gerou o
+  // corte acha que "não aconteceu nada" porque nunca rola até ver.
+  useEffect(() => {
+    if (status === 'done' && clips.length > 0) {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [status, clips]);
 
   function formatElapsed(totalSeconds) {
     const m = Math.floor(totalSeconds / 60);
@@ -435,7 +445,7 @@ export default function Home() {
 
       {/* Resultados */}
       {clips.length > 0 && (
-        <section className="px-8 pb-24 max-w-5xl mx-auto">
+        <section ref={resultsRef} className="px-8 pb-24 max-w-5xl mx-auto">
           {/* Aviso de apagão — os cortes não ficam guardados no servidor */}
           <div className="border border-record/40 bg-record/10 rounded-md px-4 py-3 mb-6 flex items-center justify-between gap-4 flex-wrap">
             <p className="text-sm text-paper/80">
