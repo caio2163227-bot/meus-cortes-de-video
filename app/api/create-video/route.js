@@ -52,6 +52,14 @@ export async function POST(req) {
     const outputPath = path.join(workDir, 'clip-1.mp4');
     await renderTextVideo({ audioPath, words, duration, outputPath });
 
+    // Mesma checagem do fluxo de cortes: garante que o vídeo final saiu
+    // válido antes de entregar, em vez de arriscar mandar um arquivo
+    // corrompido que "carrega e não mostra nada" pro usuário.
+    const finalDuration = await getAudioDuration(outputPath).catch(() => 0);
+    if (!finalDuration || finalDuration < 0.5) {
+      throw new Error('O vídeo saiu inválido dessa vez — o servidor pode estar sobrecarregado. Tenta de novo em instantes.');
+    }
+
     const title = text.length > 60 ? text.slice(0, 57) + '...' : text;
     const clip = { file: `/api/clips/${jobId}/clip-1.mp4`, title, start: 0, end: duration };
 
