@@ -473,7 +473,7 @@ export default function Home() {
 
       <AuthoritySection />
 
-      <AdSlot slot="1234567890" />
+      <AdSlot slot="5890317581" />
 
       <footer className="border-t border-wire px-8 py-6 text-center">
         <p className="font-mono text-[10px] text-paper/30 tracking-[0.2em] mb-3">
