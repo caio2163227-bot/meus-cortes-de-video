@@ -8,6 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "@vladmandic/face-api": "^1.7.15",
     "bcryptjs": "^2.4.3",
     "ffmpeg-static": "^5.2.0",
     "ffprobe-static": "^3.1.0",

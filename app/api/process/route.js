@@ -7,11 +7,12 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { transcribeVideo } from '@/lib/transcribe';
 import { findHighlights } from '@/lib/highlights';
-import { cutClip } from '@/lib/cutVideo';
+import { cutClip, extractFrame } from '@/lib/cutVideo';
 import { extractAudio } from '@/lib/extractAudio';
 import { downloadFromUrl, isVideoUrl } from '@/lib/downloadVideo';
 import { DATA_DIR, addJobToIndex, cleanupOldOriginals, ensureCleanupScheduler } from '@/lib/jobIndex';
 import { DAILY_LIMIT, hasReachedDailyLimit, incrementUsage } from '@/lib/usage';
+import { detectFaceCenterX } from '@/lib/faceDetect';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -79,6 +80,22 @@ export async function POST(req) {
     for (let i = 0; i < highlights.length; i++) {
       const h = highlights[i];
       const outputPath = path.join(workDir, `clip-${i + 1}.mp4`);
+
+      // Detecta o rosto num frame perto do início do corte, pra seguir
+      // quem está falando em vez de sempre cortar centralizado. Se
+      // falhar por qualquer motivo, cai pro corte centralizado de sempre.
+      let faceCenterXRatio;
+      const framePath = path.join(workDir, `frame-${i + 1}.jpg`);
+      try {
+        const frameTime = h.start + Math.min(1, (h.end - h.start) * 0.1);
+        await extractFrame(inputPath, frameTime, framePath);
+        faceCenterXRatio = await detectFaceCenterX(framePath);
+      } catch (err) {
+        console.error('Falha ao detectar rosto pro corte', i + 1, ':', err.message);
+      } finally {
+        if (fs.existsSync(framePath)) fs.unlinkSync(framePath);
+      }
+
       await cutClip({
         inputPath,
         segments,
@@ -89,6 +106,7 @@ export async function POST(req) {
         vertical: true,
         burnCaptions: true,
         hookText: h.hookText,
+        faceCenterXRatio,
       });
       clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
     }
