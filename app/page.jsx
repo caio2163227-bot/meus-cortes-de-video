@@ -449,9 +449,20 @@ export default function Home() {
             )}
           </div>
 
-          <h2 className="font-mono text-xs tracking-widest text-paper/40 mb-6">
-            {clips.length} CORTES ENCONTRADOS
-          </h2>
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+            <h2 className="font-mono text-xs tracking-widest text-paper/40">
+              {clips.length} CORTES ENCONTRADOS
+            </h2>
+            <a
+              href={`/api/clips/${jobId}/zip`}
+              className="flex items-center gap-1.5 border border-signal/40 hover:border-signal hover:bg-signal/10 text-signal rounded-md px-3 py-1.5 text-xs font-mono transition-colors"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M12 3v13m0 0l-5-5m5 5l5-5M4 21h16" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Baixar tudo (.zip)
+            </a>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {clips.map((clip, i) => (
               <div
