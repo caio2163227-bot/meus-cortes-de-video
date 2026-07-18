@@ -65,10 +65,12 @@ export async function POST(req) {
     try {
       const finalDuration = await getAudioDuration(outputPath);
       if (!finalDuration || finalDuration < 0.5) {
-        throw new Error('O vídeo saiu inválido dessa vez — o servidor pode estar sobrecarregado. Tenta de novo em instantes.');
+        const fileSize = fs.existsSync(outputPath) ? fs.statSync(outputPath).size : 0;
+        // Mensagem temporária com o motivo técnico real, pra diagnosticar.
+        throw new Error(`Vídeo inválido — duração ${finalDuration}s, arquivo ${fileSize} bytes.`);
       }
     } catch (err) {
-      if (err.message?.includes('sobrecarregado')) throw err;
+      if (err.message?.startsWith('Vídeo inválido')) throw err;
       console.error('Não consegui checar o vídeo final via ffprobe (mantendo mesmo assim):', err.message);
     }
 

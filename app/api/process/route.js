@@ -70,6 +70,7 @@ export async function POST(req) {
     const highlights = await findHighlights(segments, { targetDuration: duration });
 
     const clips = [];
+    const failureReasons = [];
     for (let i = 0; i < highlights.length; i++) {
       const h = highlights[i];
       const outputPath = path.join(workDir, `clip-${i + 1}.mp4`);
@@ -111,7 +112,10 @@ export async function POST(req) {
       try {
         const clipDuration = await getAudioDuration(outputPath);
         if (!clipDuration || clipDuration < 0.5) {
-          console.error(`Corte ${i + 1} descartado — duração inválida (${clipDuration}s).`);
+          const fileSize = fs.existsSync(outputPath) ? fs.statSync(outputPath).size : 0;
+          const reason = `Corte ${i + 1}: duração ${clipDuration}s, arquivo ${fileSize} bytes`;
+          console.error(`Corte descartado — ${reason}`);
+          failureReasons.push(reason);
           if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
           continue;
         }
@@ -123,7 +127,10 @@ export async function POST(req) {
     }
 
     if (clips.length === 0) {
-      throw new Error('Nenhum corte saiu válido dessa vez — o servidor pode estar sobrecarregado. Tenta de novo em instantes.');
+      // Mensagem temporária com o motivo técnico real (em vez de um aviso
+      // genérico) — isso já falhou 3x seguidas com a mensagem genérica, e
+      // sem ver o motivo de verdade não dá pra saber o que está quebrando.
+      throw new Error(`Nenhum corte saiu válido. Detalhe técnico: ${failureReasons.join(' | ') || 'sem detalhe'}`);
     }
 
     // Guarda esse vídeo no histórico permanente, vinculado a essa conta
