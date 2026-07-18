@@ -7,7 +7,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { transcribeVideo } from '@/lib/transcribe';
 import { findHighlights } from '@/lib/highlights';
-import { cutClip, extractFrame } from '@/lib/cutVideo';
+import { cutClip, extractFrame, getAudioDuration } from '@/lib/cutVideo';
 import { extractAudio } from '@/lib/extractAudio';
 import { downloadFromUrl, isVideoUrl } from '@/lib/downloadVideo';
 import { DATA_DIR, addJobToIndex, cleanupOldOriginals, ensureCleanupScheduler } from '@/lib/jobIndex';
@@ -101,7 +101,28 @@ export async function POST(req) {
         hookText: h.hookText,
         faceCenterXRatio,
       });
+
+      // Confere se o corte saiu de verdade (arquivo com duração real) antes
+      // de oferecer ele — sem isso, um corte que falha no meio da
+      // codificação (ex: servidor sobrecarregado) vira um vídeo quebrado
+      // que "carrega e não mostra nada" pro usuário, sem nenhum aviso.
+      let clipDuration = 0;
+      try {
+        clipDuration = await getAudioDuration(outputPath);
+      } catch (err) {
+        console.error(`Corte ${i + 1} saiu inválido (não abre no ffprobe):`, err.message);
+      }
+      if (!clipDuration || clipDuration < 0.5) {
+        console.error(`Corte ${i + 1} descartado — duração inválida (${clipDuration}s).`);
+        if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+        continue;
+      }
+
       clips.push({ ...h, file: `/api/clips/${jobId}/clip-${i + 1}.mp4` });
+    }
+
+    if (clips.length === 0) {
+      throw new Error('Nenhum corte saiu válido dessa vez — o servidor pode estar sobrecarregado. Tenta de novo em instantes.');
     }
 
     // Guarda esse vídeo no histórico permanente, vinculado a essa conta
