@@ -494,13 +494,33 @@ export default function Home() {
             {clips.map((clip, i) => (
               <div
                 key={i}
-                className="border border-wire rounded-md overflow-hidden hover:border-signal/40 transition-colors"
+                className={`rounded-md overflow-hidden transition-all hover:-translate-y-0.5 ${
+                  i === 0
+                    ? 'border border-signal/60 hover:border-signal'
+                    : 'border border-wire hover:border-signal/40'
+                }`}
+                style={i === 0 ? { boxShadow: '0 0 40px -16px rgba(46, 95, 255, 0.5)' } : undefined}
               >
                 <div className="relative">
-                  <video src={clip.file} controls className="w-full aspect-[9/16] bg-black" />
+                  <video
+                    src={clip.file}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="w-full aspect-[9/16] bg-black"
+                  />
                   <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-ink/80 rounded font-mono text-[9px] text-timecode tracking-wide pointer-events-none">
-                    {formatTime(clip.start)} → {formatTime(clip.end)}
+                    {formatTime(clip.start)} → {formatTime(clip.end)} · {formatTime(clip.end - clip.start)}
                   </div>
+                  {i === 0 ? (
+                    <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-signal rounded font-mono text-[9px] text-paper tracking-wide pointer-events-none flex items-center gap-1">
+                      ★ MELHOR CORTE
+                    </div>
+                  ) : (
+                    <div className="absolute top-2 right-2 h-5 w-5 flex items-center justify-center bg-ink/80 rounded-full font-mono text-[9px] text-paper/60 tracking-wide pointer-events-none">
+                      {i + 1}
+                    </div>
+                  )}
                 </div>
                 <div className="p-4">
                   <p className="font-display text-xl italic leading-snug mb-2">{clip.title}</p>
