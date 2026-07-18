@@ -69,6 +69,10 @@ export async function POST(req) {
 
     const highlights = await findHighlights(segments, { targetDuration: duration });
 
+    if (highlights.length === 0) {
+      throw new Error('Não consegui identificar nenhum trecho de destaque nesse vídeo — tenta um vídeo com mais fala, ou um link diferente.');
+    }
+
     const clips = [];
     const failureReasons = [];
     for (let i = 0; i < highlights.length; i++) {
